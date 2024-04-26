@@ -1,106 +1,287 @@
-#' Baixar consulta processual de primeiro grau
+#' Baixar dados da consulta processual de primeiro grau
 #'
-#' @param processos Número do processo (cnj)
-#' @param sono Tempo em segundos entre requisições.
-#' @param diretorio Diretório onde serão armazenados os htmls
+#' @param consulta Númeração Única do processo (CNJ)
+#' @param parametro Parâmetro a ser utilizado na consulta.
+#' Se nenhum parâmetro for informado, o default é considerar 'NUMPROC'.
+#' 'NUMPROC' = Numeração Única do Processo ou Código do Processo;
+#' 'NMPARTE' = Nome da parte;
+#' 'DOCPARTE' = Número do documento da parte;
+#' 'NMADVOGADO' = Nome do advogado;
+#' 'NUMOAB' = Número da OAB do advogado;
+#' 'PRECATORIA' = Número do precatório;
+#' 'DOCELEG' = Número do documento de delegacia;
+#' 'NUMCDA' = Número de Certidão de Dívida Ativa (CDA)
+#' @param diretorio Diretório onde será armazenado o html
 #'
-#' @return html com dados processuais
+#' @return html da consulta
+#'
 #' @export
 #'
+#' @examples
+#' \dontrun{
+#' tjsp_baixar_cpopg("10031013820238260223") # exemplo típico de processo
+#' tjsp_baixar_cpopg("00002359320188260047") # exemplo de processo em que um único processo gera uma lista de processos
+#' tjsp_baixar_cpopg("JK0001UPV0000") # exemplo típico de cd_processo
+#' tjsp_baixar_cpopg("JK00024VK0000") # exemplo de cd_processo de incidente
+#' tjsp_baixar_cpopg(c("10091165420168260001", "WW0015T010000"))
+#' tjsp_baixar_cpopg("123456SP", "NUMOAB")
+#' tjsp_baixar_cpopg("José de Jesus Filho", "NMADVOGADO")
+#' }
+#'
+#' @details A estrutura do nome dos arquivos é sempre ./{parametro}_{consulta}.html. Quando há várias páginas, é adicionado o número da página ao fim, ficando ./{parametro}_{consulta}_{pagina}.html
+tjsp_baixar_cpopg <- function(consulta = NULL, parametro = c("NUMPROC", "NMPARTE", "DOCPARTE", "NMADVOGADO", "NUMOAB", "PRECATORIA", "DOCDELEG", "NUMCDA"), diretorio = ".") {
 
-tjsp_baixar_cpopg <- function(processos = NULL, sono = 1, diretorio = "."){
+  if(length(parametro) > 1) {
+    parametro = "NUMPROC"
+  }
 
+  if(parametro == "NUMPROC") {
+    # baixar pelo parâmetro processo
+    purrr::walk(consulta, ~{
+      processo <- .x |>
+        stringr::str_remove_all("\\W")
 
-  processos <- stringr::str_remove_all(processos, "\\D+") |>
-    stringr::str_pad(width = 20, "left", "0") |>
-    pontuar_cnj()
+      if(stringr::str_length(processo) == 20) {
+        tjsp_baixar_cpopg_processo(processo = .x)
 
+        Sys.sleep(1)
+      }
 
-  pb <- progress::progress_bar$new(total = length(processos))
+      if(stringr::str_length(processo) == 13) {
+        tjsp_baixar_cpopg_cd_processo(cd_processo = .x)
+      }
+    })
+  } else {
+    # baixar pelos demais parâmetros
+    purrr::walk(consulta, ~{
+      tjsp_baixar_cpopg_outros(consulta = .x, parametro = parametro)
 
+      Sys.sleep(1)
+    })
+  }
+}
 
-  purrr::walk(processos, purrr::possibly(~{
+#' Baixar dados da consulta processual de primeiro grau com base na numeração única do processo
+#'
+#' @param processo Númeração Única do processo (CNJ)
+#' @param diretorio Diretório onde será armazenado o html
+#'
+#' @return html da consulta
+#'
+#' @example tjsp_baixar_cpopg_processo("10031013820238260223") # exemplo típico
+#' @example tjsp_baixar_cpopg_processo("00002359320188260047") # exemplo em que um único processo gera uma lista de processos
+#'
+tjsp_baixar_cpopg_processo <- function(processo, diretorio = "."){
 
-    pb$tick()
+  url <- "https://esaj.tjsp.jus.br/cpopg/search.do?"
 
-    tjsp_baixar_cpopg1(.x,diretorio)
+  cookies <- httr2::last_request()$options$cookiefile
 
-    Sys.sleep(sono)
+  # Define request
+  req <- httr2::request(url)  |>
+    httr2::req_cookie_preserve(cookies) |>
+    httr2::req_options(ssl_verifypeer = 0)
 
-  },NULL))
+  # Build query
+  processo <- processo |>
+    stringr::str_remove_all("\\D+")
 
+  unificado <- processo |>
+    stringr::str_extract(".{13}")
+
+  foro <- processo |>
+    stringr::str_extract("\\d{4}$")
+
+  query <- list(
+    conversationId = "",
+    dadosConsulta.localPesquisa.cdLocal = "-1",
+    cbPesquisa = "NUMPROC",
+    dadosConsulta.tipoNuProcesso = "UNIFICADO",
+    numeroDigitoAnoUnificado = unificado,
+    foroNumeroUnificado = foro,
+    dadosConsulta.valorConsultaNuUnificado = processo,
+    dadosConsulta.valorConsulta = "",
+    uuidCaptcha = ""
+  )
+
+  # Perfom response
+  resp <- req |>
+    httr2::req_url_query(!!!query) |>  # query
+    httr2::req_perform()
+
+  # html
+  conteudo <- resp |>
+    httr2::resp_body_html()
+
+  if(xml2::xml_find_first(conteudo, "boolean(//div[@id='listagemDeProcessos'])")) {
+
+    cd_processos <- conteudo |>
+      xml2::xml_find_all("//a[@class='linkProcesso']") |>
+      xml2::xml_attr("href") |>
+      stringr::str_extract( "(?<=processo\\.codigo=)\\w+")
+
+    purrr::walk(cd_processos, tjsp_baixar_cpopg_cd_processo)
+
+  } else if(xml2::xml_find_first(conteudo, "boolean(//div[@id='modalIncidentes'])")) {
+
+    cd_processos <- conteudo |>
+      xml2::xml_find_all("//input[@id='processoSelecionado']") |>
+      xml2::xml_attr("value")
+
+    purrr::walk(cd_processos, tjsp_baixar_cpopg_cd_processo)
+
+  } else {
+
+    cd_processo <- conteudo |>
+      xml2::xml_find_first("//script[contains(text(),'processo.codigo')]") |>
+      xml2::xml_text() |>
+      stringr::str_extract("(?<=processo.codigo=)\\w+")
+
+    id <- glue::glue("NUMPROC_{processo}_{cd_processo}")
+
+    arquivo <- fs::path(diretorio, id, ext = "html")
+
+    writeBin(resp$body, arquivo)
+
+  }
+}
+
+#' Baixar dados da consulta processual de primeiro grau com base no código do processo
+#'
+#' @param cd_processo Código do processo
+#' @param diretorio Diretório onde armazenar os arquivos.
+#'
+#' @return html da consulta
+#'
+#' @example tjsp_baixar_cpopg_cd_processo("67000FE100000") # exemplo típico
+#' @example tjsp_baixar_cpopg_cd_processo("1B00023PT1PQ8") # exemplo de incidente
+#'
+tjsp_baixar_cpopg_cd_processo <- function(cd_processo, diretorio = "."){
+  cd_processo <- stringr::str_extract(cd_processo,"\\w+")
+
+  url <- glue::glue("https://esaj.tjsp.jus.br/cpopg/show.do?processo.codigo={cd_processo}&gateway=true")
+
+  cookies <- httr2::last_request()$options$cookiefile
+
+  resp <- url |>
+    httr2::request() |>
+    httr2::req_cookie_preserve(cookies) |>
+    httr2::req_options(ssl_verifypeer = FALSE) |>
+    httr2::req_perform()
+
+  processo <- resp |>
+    httr2::resp_body_html() |>
+    xml2::xml_find_first("//span[@id='numeroProcesso']") |>
+    xml2::xml_text() |>
+    stringr::str_remove_all("\\W")
+
+  if(is.na(processo)) {
+    processo <- resp |>
+      httr2::resp_body_html() |>
+      xml2::xml_find_first("//span[@class='unj-larger']") |>
+      xml2::xml_text() |>
+      stringr::str_remove_all("\\W") |>
+      stringr::str_extract_all("\\d{20}")
+  }
+
+  id <- glue::glue("NUMPROC_{processo}_{cd_processo}")
+
+  arquivo <- fs::path(diretorio, id, ext = "html")
+
+  writeBin(resp$body, arquivo)
 
 }
 
+#' Baixar dados da consulta processual de primeiro grau com base em outros parâmetros especificados
+#'
+#' @param consulta Valor da consulta
+#' @param parametro Parâmetro a ser utilizado na consulta. 'NMPARTE' = Nome da parte; 'DOCPARTE' = Número do documento da parte; 'NMADVOGADO' = Nome do advogado; 'NUMOAB' = Número da OAB do advogado; 'PRECATORIA' = Número do precatório; 'DOCELEG' = Número do documento de delegacia; 'NUMCDA' = Número de Certidão de Dívida Ativa (CDA)
+#' @param diretorio Diretório onde será armazenado o html
+#'
+#' @return html da consulta
+#'
+#' @examples
+#' \dontrun{
+#' tjsp_baixar_cpopg_par(consulta="123456SP", parametro = "NUMOAB")
+#' tjsp_baixar_cpopg_par(consulta = "José da Silva Pereira", parametro = "NMPARTE")
+#'}
+tjsp_baixar_cpopg_outros <- function(consulta = NULL, parametro = c("NMPARTE", "DOCPARTE", "NMADVOGADO", "NUMOAB", "PRECATORIA", "DOCDELEG", "NUMCDA"), diretorio = ".") {
 
+  if(is.null(consulta)) {
+    stop("Informe os valores a serem consultados")
+  }
 
+  if(parametro %in% c("NMPARTE", "NMADVOGADO") & any(stringr::str_detect(consulta, "\\d"))) {
+    txt <- glue::glue("O parâmetro {parametro} requer que sejam inseridos nomes na 'consulta', entretanto, foram identificados números. \nCertifique-se de que todos os valores da 'consulta' representam nomes.")
+    warning(txt)
+  }
 
+  if(parametro == "NUMOAB" | parametro == "DOCPARTE") {
 
+    consulta <- stringr::str_remove_all(consulta, "\\W")
 
-tjsp_baixar_cpopg1 <- function (processo = NULL, diretorio)
-{
+  }
 
-  httr::set_config(httr::config(ssl_verifypeer = FALSE))
+  cookies <- httr2::last_request()$options$cookiefile
 
-  uri1 <- "https://esaj.tjsp.jus.br/cpopg/search.do?gateway=true"
+  url_base <- "https://esaj.tjsp.jus.br/cpopg"
 
-    unificado <- processo |>  stringr::str_extract(".{15}")
+  req <- url_base |>
+    httr2::request() |>
+    httr2::req_cookie_preserve(cookies) |>
+    httr2::req_options(ssl_verifypeer = 0)
 
-    foro <- processo |>  stringr::str_extract("\\d{4}$")
+  # POST request for first page
+  resp <- req |>
+    httr2::req_url_path_append("search.do") |>
+    httr2::req_body_form(
+      conversationId = "",
+      cbPesquisa = parametro,
+      dadosConsulta.valorConsulta = consulta,
+      cdForo = "-1"
+    ) |>
+    httr2::req_perform()
 
-     query1 <- list(conversationId = "", dadosConsulta.localPesquisa.cdLocal = "-1",
-                   cbPesquisa = "NUMPROC", dadosConsulta.tipoNuProcesso = "UNIFICADO",
-                   numeroDigitoAnoUnificado = unificado, foroNumeroUnificado = foro,
-                   dadosConsulta.valorConsultaNuUnificado = processo, dadosConsulta.valorConsulta = "",
-                   uuidCaptcha = "")
+  id <- sprintf(glue::glue("{parametro}_{consulta}_%02d"), 1) |>
+    abjutils::rm_accent() |>
+    stringr::str_replace_all(" ", "_")
+  arquivo <- fs::path(diretorio, id, ext = "html")
 
-    resposta1 <- httr::RETRY("GET", url = uri1, query = query1,
-                             quiet = TRUE, httr::timeout(2))
+  writeBin(resp$body, arquivo)
 
-    conteudo1 <- httr::content(resposta1)
+  paginas <- resp |>
+    httr2::resp_body_html() |>
+    xml2::xml_find_first("//span[@id='contadorDeProcessos']") |>
+    xml2::xml_text() |>
+    stringr::str_extract_all("\\d+") |>
+    as.integer() |>
+    magrittr::divide_by(25) |>
+    ceiling()
 
-    if (xml2::xml_find_first(conteudo1, "boolean(//div[@id='listagemDeProcessos'])")) {
+  if(is.na(paginas)) {paginas <- 1L}
 
-      codigo_processo <-  xml2::xml_find_all(conteudo1, "//a[@class='linkProcesso']") |>
-        xml2::xml_attr("href") |>
-        stringr::str_extract( "(?<=processo\\.codigo=)\\w+")
+  if(paginas > 1) {
+    Sys.sleep(1)
 
-      conteudo1 <-   codigo_processo |>
-        paste0("https://esaj.tjsp.jus.br/cpopg/show.do?processo.codigo=", ... = _, "&gateway=true") |>
-        purrr::map(~ httr::RETRY("GET", .x, httr::timeout(2)) |>
-                     httr::content())
+    purrr::walk(2:paginas, ~{
+      id <- sprintf(glue::glue("{parametro}_{consulta}_%02d"), .x)
 
-    } else if (xml2::xml_find_first(conteudo1, "boolean(//div[@id='modalIncidentes'])")){
+      arquivo <- fs::path(diretorio, id, ext = "html")
 
+      resp <- req |>
+        httr2::req_url_path_append("trocarPagina.do") |>
+        httr2::req_body_form(
+          paginaConsulta = .x,
+          conversationId = "",
+          cbPesquisa = parametro,
+          dadosConsulta.valorConsulta = consulta,
+          cdForo = "-1"
+        ) |>
+        httr2::req_perform()
 
-      codigo_processo <- conteudo1 |>
-        xml2::xml_find_all("//input[@id='processoSelecionado']") |>
-        xml2::xml_attr("value")
+      writeBin(resp$body, arquivo)
 
-      conteudo1 <- codigo_processo |>
-        purrr::map(~{
-          .x |>
-            paste0("https://esaj.tjsp.jus.br/cpopg/show.do?processo.codigo=", ... = _, "&gateway=true") |>
-            httr::GET() |>
-            httr::content()
-        })
-    } else {
-
-      codigo_processo <- conteudo1 |>
-        xml2::xml_find_first("//script[contains(text(),'processo.codigo')]") |>
-        xml2::xml_text() |>
-        stringr::str_extract("(?<=processo.codigo=)\\w+")
-
-
-      conteudo1 <- list(conteudo1)
-
-    }
-
-    processo <- stringr::str_remove_all(processo, "\\D+")
-
-    arquivo <- file.path(diretorio, paste0("cpopg_", format(Sys.Date(),
-                                                            "%Y_%m_%d_"), processo,"_cd_processo_",codigo_processo,".html"))
-
-    purrr::walk2(conteudo1, arquivo, ~xml2::write_html(.x, .y))
-
+      Sys.sleep(1)
+    })
+  }
 }

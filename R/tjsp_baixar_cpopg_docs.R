@@ -8,8 +8,6 @@
 #'
 tjsp_baixar_cpopg_docs <- function(df,diretorio = "."){
 
-
-
   lista <- df |>
     dplyr::mutate(p = stringr::str_remove_all(processo, "\\D+") |>
                     stringr::str_pad(width = 20, "left", "0") |>
