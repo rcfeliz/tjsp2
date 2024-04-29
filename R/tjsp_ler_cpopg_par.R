@@ -6,7 +6,7 @@
 #' @return tibble
 #' @export
 #'
-tjsp_ler_cpopg_par <- function(arquivos = NULL, diretorio = "."){
+tjsp_ler_cpopg_partes <- function(arquivos = NULL, diretorio = "."){
 
   if(is.null(arquivos)){
 

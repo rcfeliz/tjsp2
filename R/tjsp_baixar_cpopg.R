@@ -28,11 +28,14 @@
 #' tjsp_baixar_cpopg("José de Jesus Filho", "NMADVOGADO")
 #' }
 #'
-#' @details A estrutura do nome dos arquivos é sempre ./{parametro}_{consulta}.html. Quando há várias páginas, é adicionado o número da página ao fim, ficando ./{parametro}_{consulta}_{pagina}.html
+#' @details A estrutura do nome dos arquivos é sempre ./{parametro}_{consulta}.html.
+#'Quando há várias páginas, é adicionado o número da página ao fim, ficando ./{parametro}_{consulta}_{pagina}.html
+#'Quando a pesquisa é realizada pelo número do processo, ou pelo código do processo, a {consulta} se divide em dois números: primeiro vem o número do processo, em seguida o código do processo, ficando ./{parametro}_{processo}_{cd_processo}.html
+#'
 tjsp_baixar_cpopg <- function(consulta = NULL, parametro = c("NUMPROC", "NMPARTE", "DOCPARTE", "NMADVOGADO", "NUMOAB", "PRECATORIA", "DOCDELEG", "NUMCDA"), diretorio = ".") {
 
   if(length(parametro) > 1) {
-    parametro = "NUMPROC"
+    parametro <- "NUMPROC"
   }
 
   if(parametro == "NUMPROC") {
@@ -217,9 +220,7 @@ tjsp_baixar_cpopg_outros <- function(consulta = NULL, parametro = c("NMPARTE", "
   }
 
   if(parametro == "NUMOAB" | parametro == "DOCPARTE") {
-
     consulta <- stringr::str_remove_all(consulta, "\\W")
-
   }
 
   cookies <- httr2::last_request()$options$cookiefile
@@ -231,20 +232,22 @@ tjsp_baixar_cpopg_outros <- function(consulta = NULL, parametro = c("NMPARTE", "
     httr2::req_cookie_preserve(cookies) |>
     httr2::req_options(ssl_verifypeer = 0)
 
-  # POST request for first page
+  # GET request for first page
   resp <- req |>
     httr2::req_url_path_append("search.do") |>
-    httr2::req_body_form(
+    httr2::req_url_query(
       conversationId = "",
       cbPesquisa = parametro,
       dadosConsulta.valorConsulta = consulta,
-      cdForo = "-1"
+      cdForo = "-1",
+      gateway = 'true'
     ) |>
     httr2::req_perform()
 
   id <- sprintf(glue::glue("{parametro}_{consulta}_%02d"), 1) |>
     abjutils::rm_accent() |>
     stringr::str_replace_all(" ", "_")
+
   arquivo <- fs::path(diretorio, id, ext = "html")
 
   writeBin(resp$body, arquivo)
@@ -258,6 +261,7 @@ tjsp_baixar_cpopg_outros <- function(consulta = NULL, parametro = c("NMPARTE", "
     magrittr::divide_by(25) |>
     ceiling()
 
+  # GET for 2+ pages
   if(is.na(paginas)) {paginas <- 1L}
 
   if(paginas > 1) {
@@ -270,12 +274,13 @@ tjsp_baixar_cpopg_outros <- function(consulta = NULL, parametro = c("NMPARTE", "
 
       resp <- req |>
         httr2::req_url_path_append("trocarPagina.do") |>
-        httr2::req_body_form(
+        httr2::req_url_query(
           paginaConsulta = .x,
           conversationId = "",
           cbPesquisa = parametro,
           dadosConsulta.valorConsulta = consulta,
-          cdForo = "-1"
+          cdForo = "-1",
+          gateway = 'true'
         ) |>
         httr2::req_perform()
 
