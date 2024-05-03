@@ -1,4 +1,4 @@
-#' Iteração da função tjsp_ler_cpopg_outros_unitario()
+#' Iteração da função tjsp_cpopg_ler_outros_unitario()
 #'
 #' @param arquivos Vetor contendo o path de arquivos html
 #'
@@ -6,8 +6,8 @@
 #'
 #' @export
 #'
-tjsp_ler_cpopg_outros <- function(arquivos) {
-  purrr::map_dfr(arquivos, tjsp_ler_cpopg_outros_unitario)
+tjsp_cpopg_ler_outros <- function(arquivos) {
+  purrr::map_dfr(arquivos, tjsp_cpopg_ler_outros_unitario)
 }
 
 #' Lê busca por paramêtro diferente do processo
@@ -16,7 +16,7 @@ tjsp_ler_cpopg_outros <- function(arquivos) {
 #'
 #' @return tibble contendo 10 colunas
 #'
-tjsp_ler_cpopg_outros_unitario <- function(arquivo) {
+tjsp_cpopg_ler_outros_unitario <- function(arquivo) {
   html <- arquivo |>
     xml2::read_html() |>
     xml2::xml_find_all("//ul[@class='unj-list-row']") |>

@@ -9,26 +9,33 @@
 #'
 #' @examples
 #' \dontrun{
-#' tjsp_baixar_cpopg("10031013820238260223") # exemplo típico de processo
-#' tjsp_baixar_cpopg("00002359320188260047") # exemplo de processo em que um único processo gera uma lista de processos
-#' tjsp_baixar_cpopg("JK0001UPV0000") # exemplo típico de cd_processo
-#' tjsp_baixar_cpopg("JK00024VK0000") # exemplo de cd_processo de incidente
-#' tjsp_baixar_cpopg(c("10091165420168260001", "WW0015T010000"))
+#' tjsp_cpopg_baixar("10031013820238260223") # exemplo típico de processo
+#' tjsp_cpopg_baixar("00002359320188260047") # exemplo de processo em que um único processo gera uma lista de processos
+#' tjsp_cpopg_baixar("JK0001UPV0000") # exemplo típico de cd_processo
+#' tjsp_cpopg_baixar("JK00024VK0000") # exemplo de cd_processo de incidente
+#' tjsp_cpopg_baixar(c("10091165420168260001", "WW0015T010000"))
 #' }
 #'
-tjsp_baixar_cpopg <- function(processos = NULL,  diretorio = ".") {
+tjsp_cpopg_baixar <- function(processos = NULL,  diretorio = ".") {
+
+  cookies <- httr2::last_request()$options$cookiefile
+
+  if(is.null(cookies)) {
+    stop("Faça login no esaj, por meio da função tjsp_autenticar()")
+  }
+
   purrr::walk(processos, ~{
     processo <- .x |>
       stringr::str_remove_all("\\W")
 
     if(stringr::str_length(processo) == 20) {
-      tjsp_baixar_cpopg_processo(processo = .x)
+      tjsp_cpopg_baixar_processo(processo = .x, diretorio = diretorio)
 
       Sys.sleep(1)
     }
 
     if(stringr::str_length(processo) == 13) {
-      tjsp_baixar_cpopg_cd_processo(cd_processo = .x)
+      tjsp_cpopg_baixar_cd_processo(cd_processo = .x, diretorio = diretorio)
     }
   })
 }
@@ -40,10 +47,10 @@ tjsp_baixar_cpopg <- function(processos = NULL,  diretorio = ".") {
 #'
 #' @return html da consulta
 #'
-#' @example tjsp_baixar_cpopg_processo("10031013820238260223") # exemplo típico
-#' @example tjsp_baixar_cpopg_processo("00002359320188260047") # exemplo em que um único processo gera uma lista de processos
+#' @example tjsp_cpopg_baixar_processo("10031013820238260223") # exemplo típico
+#' @example tjsp_cpopg_baixar_processo("00002359320188260047") # exemplo em que um único processo gera uma lista de processos
 #'
-tjsp_baixar_cpopg_processo <- function(processo, diretorio = "."){
+tjsp_cpopg_baixar_processo <- function(processo, diretorio = "."){
 
   url <- "https://esaj.tjsp.jus.br/cpopg/search.do?"
 
@@ -92,7 +99,7 @@ tjsp_baixar_cpopg_processo <- function(processo, diretorio = "."){
       xml2::xml_attr("href") |>
       stringr::str_extract( "(?<=processo\\.codigo=)\\w+")
 
-    purrr::walk(cd_processos, tjsp_baixar_cpopg_cd_processo)
+    purrr::walk(cd_processos, tjsp_cpopg_baixar_cd_processo)
 
   } else if(xml2::xml_find_first(conteudo, "boolean(//div[@id='modalIncidentes'])")) {
 
@@ -100,7 +107,7 @@ tjsp_baixar_cpopg_processo <- function(processo, diretorio = "."){
       xml2::xml_find_all("//input[@id='processoSelecionado']") |>
       xml2::xml_attr("value")
 
-    purrr::walk(cd_processos, tjsp_baixar_cpopg_cd_processo)
+    purrr::walk(cd_processos, tjsp_cpopg_baixar_cd_processo)
 
   } else {
 
@@ -125,10 +132,10 @@ tjsp_baixar_cpopg_processo <- function(processo, diretorio = "."){
 #'
 #' @return html da consulta
 #'
-#' @example tjsp_baixar_cpopg_cd_processo("67000FE100000") # exemplo típico
-#' @example tjsp_baixar_cpopg_cd_processo("1B00023PT1PQ8") # exemplo de incidente
+#' @example tjsp_cpopg_baixar_cd_processo("67000FE100000") # exemplo típico
+#' @example tjsp_cpopg_baixar_cd_processo("1B00023PT1PQ8") # exemplo de incidente
 #'
-tjsp_baixar_cpopg_cd_processo <- function(cd_processo, diretorio = "."){
+tjsp_cpopg_baixar_cd_processo <- function(cd_processo, diretorio = "."){
   cd_processo <- stringr::str_extract(cd_processo,"\\w+")
 
   url <- glue::glue("https://esaj.tjsp.jus.br/cpopg/show.do?processo.codigo={cd_processo}&gateway=true")

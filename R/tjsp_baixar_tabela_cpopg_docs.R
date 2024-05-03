@@ -6,8 +6,7 @@
 #' @return html
 #' @export
 #'
-tjsp_baixar_tabela_cpopg_docs <- function (processos = NULL, diretorio = ".")
-{
+tjsp_baixar_tabela_cpopg_docs <- function (processos = NULL, diretorio = ".") {
   httr::set_config(httr::config(ssl_verifypeer = FALSE))
 
 

@@ -6,8 +6,7 @@
 #' @return html
 #' @export
 #'
-tjsp_baixar_tabela_cd_processo <- function (cd_processo = NULL, diretorio = ".")
-{
+tjsp_baixar_tabela_cd_processo <- function (cd_processo = NULL, diretorio = ".") {
   httr::set_config(httr::config(ssl_verifypeer = FALSE))
 
 
