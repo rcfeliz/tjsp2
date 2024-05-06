@@ -268,5 +268,4 @@ tjsp_cpopg_ler_capa_completo <- function(arquivo = NULL, wide = TRUE) {
     }
 
     return(da)
-
 }

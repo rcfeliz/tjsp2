@@ -1,17 +1,9 @@
 #' Extrai a movimentação processual de primeira e de segunda instância
 #'
-#' @param arquivos se não informados, informar diretório
-#' @param diretorio objeto ou diretorio  onde se encontram os htmls
+#' @param arquivo Caminho para um arquivo html
 #'
 #' @return tibble com a movimentação processual.
-#' @export
-#' @examples
-#' \dontrun{
-#' andamento_cposg <- ler_movimentacao_cposg()
-#' andamento_cpopg <- ler_movimentacao_cpopg()
-#' }
 #'
-
 tjsp_ler_movimentacao <- function (arquivo = NULL) {
 
   html <- arquivo |>
@@ -70,7 +62,8 @@ tjsp_ler_movimentacao <- function (arquivo = NULL) {
   recurso_acessado <- anexo |>
     stringr::str_extract("(?<=Acessado=).+") |>
     URLdecode() |>
-    stringr::str_replace_all("\\+", " ")
+    stringr::str_replace_all("\\+", " ") |>
+    stringr::str_replace("NA", NA_character_)
 
   url <- anexo |>
     purrr::map_chr(~{
@@ -110,7 +103,7 @@ tjsp_ler_movimentacao <- function (arquivo = NULL) {
             class = "url"
           )
 
-         url <- httr::build_url(parseada)
+         url <- httr2::url_build(parseada)
 
        } else {
          url <- xml2::url_absolute(.x,"https://esaj.tjsp.jus.br")
@@ -135,5 +128,9 @@ tjsp_ler_movimentacao <- function (arquivo = NULL) {
       col = mov,
       into = c("movimento", "descricao"),
       sep = "\n\\s+", extra = "merge",
+      fill = "right"
     )
+
+  return(da)
+
 }
