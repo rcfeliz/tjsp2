@@ -22,9 +22,11 @@
 #' a serem parseados aparecerão para todos os processos, ainda que em alguns casos
 #' existam colunas com NA
 #'
-tjsp_cpopg_ler <- function(arquivos = NULL, capa = c("Padronizado", "Completo Long", "Completo Wide"), info = c("all", "movimentacoes", "partes", "delegacia", "peticoes diversas", "incidentes", "apensos", "audiencias", "historico classes")) {
+#' @return tibble
+#'
+tjsp_cpopg_ler_unitario <- function(arquivo = NULL, capa = c("Padronizado", "Completo Long", "Completo Wide"), info = c("all", "movimentacoes", "partes", "delegacia", "peticoes diversas", "incidentes", "apensos", "audiencias", "historico classes")) {
 
-  if(fs::is_dir(arquivos)) {
+  if(fs::is_dir(arquivo)) {
     arquivos <- fs::dir_ls(arquivos)
   }
 
@@ -35,29 +37,40 @@ tjsp_cpopg_ler <- function(arquivos = NULL, capa = c("Padronizado", "Completo Lo
 
   wide <- stringr::str_detect(capa, "Wide")
 
-  da <- purrr::map_dfr(arquivos, ~{
+  aux_capa <- tjsp_cpopg_ler_capa(arquivo, return = return, wide = wide)
 
-    aux_capa <- tjsp_cpopg_ler_capa(.x, return = return, wide = wide)
+  if(is.null(info) | any(info == "all")) {
+    info <- c("movimentacoes",
+              "partes",
+              "delegacia",
+              "peticoes diversas",
+              "incidentes",
+              "apensos",
+              "audiencias",
+              "historico classes")
+  }
 
-    aux_movimentacoes <- tjsp_cpopg_ler_movimentacoes(.x) |>
-      tidyr::nest(.by = c(processo, cd_processo), .key = "movimentos")
+  infos <- tibble::tibble(info) |>
+    dplyr::mutate(
+      info = info |>
+        stringr::str_replace_all(" ", "_"),
+      fn = glue::glue("tjsp_cpopg_ler_{info}"),
+      aux = glue::glue("aux_{info}")
+    )
 
-    aux_partes <- tjsp_cpopg_ler_partes(.x) |>
-      tidyr::nest(.by = c(processo, cd_processo), .key = "partes")
+  aux_outros <- purrr::map_dfr(infos$info, ~{
+    f <- get(infos$fn[infos$info == .x])
 
-    completo <- aux_capa |>
-      dplyr::left_join(aux_movimentos, by = dplyr::join_by(processo, cd_processo)) |>
-      dplyr::left_join(aux_partes, by = dplyr::join_by(processo, cd_processo))
+    aux_outros <- assign(infos$aux[infos$info == .x], f(arquivo)) |>
+      tidyr::nest(.by = c(processo, cd_processo), .key = .x)
 
-    # completo <-
-    list(
-      aux_capa,
-      aux_movimentacoes,
-      aux_partes
-    ) |>
-      purrr::reduce(dplyr::left_join, by = c("processo", "cd_processo"))
+    return(aux_outros)
+  }) |>
+    tidyr::fill(everything(), .direction = "up") |>
+    dplyr::slice(1)
 
-  })
+  da <- list(aux_capa, aux_outros) |>
+    purrr::reduce(dplyr::left_join, by = c("processo", "cd_processo"))
 
   return(da)
 }
