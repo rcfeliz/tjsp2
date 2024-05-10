@@ -2,17 +2,14 @@
 % Please edit documentation in R/tjsp_autenticar.R
 \name{tjsp_autenticar}
 \alias{tjsp_autenticar}
-\alias{autenticar}
 \title{Autenticar no tjsp}
 \usage{
 tjsp_autenticar(login = NULL, password = NULL)
-
-autenticar(login = NULL, password = NULL)
 }
 \arguments{
-\item{login}{cpf}
+\item{login}{CPF}
 
-\item{password}{senha}
+\item{password}{Senha}
 }
 \value{
 Estabelece uma sessão, não é necessário salvar.

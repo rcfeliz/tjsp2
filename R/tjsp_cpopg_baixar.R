@@ -47,8 +47,11 @@ tjsp_cpopg_baixar <- function(processos = NULL,  diretorio = ".") {
 #'
 #' @return html da consulta
 #'
-#' @example tjsp_cpopg_baixar_processo("10031013820238260223") # exemplo típico
-#' @example tjsp_cpopg_baixar_processo("00002359320188260047") # exemplo em que um único processo gera uma lista de processos
+#' @examples
+#' \dontrun{
+#' tjsp_cpopg_baixar_processo("10031013820238260223") # exemplo típico
+#' tjsp_cpopg_baixar_processo("00002359320188260047") # exemplo em que um único processo gera uma lista de processos
+#'}
 #'
 tjsp_cpopg_baixar_processo <- function(processo, diretorio = "."){
 
@@ -132,8 +135,11 @@ tjsp_cpopg_baixar_processo <- function(processo, diretorio = "."){
 #'
 #' @return html da consulta
 #'
-#' @example tjsp_cpopg_baixar_cd_processo("67000FE100000") # exemplo típico
-#' @example tjsp_cpopg_baixar_cd_processo("1B00023PT1PQ8") # exemplo de incidente
+#' @examples
+#' \dontrun{
+#'  tjsp_cpopg_baixar_cd_processo("67000FE100000") # exemplo típico
+#' tjsp_cpopg_baixar_cd_processo("1B00023PT1PQ8") # exemplo de incidente
+#'}
 #'
 tjsp_cpopg_baixar_cd_processo <- function(cd_processo, diretorio = "."){
   cd_processo <- stringr::str_extract(cd_processo,"\\w+")

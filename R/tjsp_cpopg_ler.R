@@ -1,19 +1,22 @@
+# main ------------------------------------------------------------------
+
 #' tjsp_cpopg_ler() parseia os dados de um html do cpopg.
 #'
-#' @param arquivo Caminho para um arquivo html
+#' @param arquivos Vetor contendo o caminho para os arquivos em html do cpopg.
+#' Pode receber também apenas a pasta em que estão os arquivos.
 #' @param capa Formato das colunas a serem retornadas. É escolhido 'Padronizado' por default.
-#' 'Padronizado' retorna uma tibble com 14 colunas, sendo:
+#' * 'Padronizado' retorna uma tibble com 14 colunas, sendo:
 #' processo, cd_processo, tipo_processo, digital, situacao, classe, assunto,
 #' foro, vara, juiz, dt_dist, area, controle, valor_da_acao.
-#' 'Completo' retorna uma tibble sem pré-definir as colunas. As colunas
+#' * 'Completo' retorna uma tibble sem pré-definir as colunas. As colunas
 #' retornadas serão  aquelas que aparecerem em cada processo.
 #' Há duas diferenças fundamentais entre as duas opções.
-#' A primeira diferença está em quais colunas são retornadas.
+#' * A primeira diferença está em quais colunas são retornadas.
 #' Há informações que não aparecem em todos os processos, tais como local_fisico,
 #' outros_assuntos, outros_numeros, unificado_ao, apensado_ao, valor_da_acao,
 #' processo_principal, recurso, entre outras. Estas colunas são excluídas do
 #' result = "Padronizado", mas aparecem no result = "Completo".
-#' A segunda diferença está nas informações NA. Quando result = "Padronizado",
+#' * A segunda diferença está nas informações NA. Quando result = "Padronizado",
 #' como as colunas que aparecem são forçadas, então haverá colunas com resultado NA.
 #' Já quando result = "Completo", então haverá dois comportamentos distintos
 #' para a função. Via de regra, a coluna cujo valor for NA não aparecerá para
@@ -21,125 +24,103 @@
 #' de um purrr::map_dfr(), então todas as colunas identificadas em todos os arquivos
 #' a serem parseados aparecerão para todos os processos, ainda que em alguns casos
 #' existam colunas com NA
-#'
+#' @param info Informações a serem lidas do html. Por default, lê-se tudo ("Tudo").
+#' Se quiser ler apenas os metadados principais, info deve ser NULL.
 #' @return tibble
 #'
-tjsp_cpopg_ler_unitario <- function(arquivo = NULL, capa = c("Padronizado", "Completo Long", "Completo Wide"), info = c("all", "movimentacoes", "partes", "delegacia", "peticoes diversas", "incidentes", "apensos", "audiencias", "historico classes")) {
-
-  if(fs::is_dir(arquivo)) {
-    arquivos <- fs::dir_ls(arquivos)
-  }
-
-  return <- dplyr::case_when(
-    stringr::str_detect(capa, "Padronizado") ~ "Padronizado",
-    TRUE ~ "Completo"
-  )
-
-  wide <- stringr::str_detect(capa, "Wide")
-
-  aux_capa <- tjsp_cpopg_ler_capa(arquivo, return = return, wide = wide)
-
-  if(is.null(info) | any(info == "all")) {
-    info <- c("movimentacoes",
-              "partes",
-              "delegacia",
-              "peticoes diversas",
-              "incidentes",
-              "apensos",
-              "audiencias",
-              "historico classes")
-  }
-
-  infos <- tibble::tibble(info) |>
-    dplyr::mutate(
-      info = info |>
-        stringr::str_replace_all(" ", "_"),
-      fn = glue::glue("tjsp_cpopg_ler_{info}"),
-      aux = glue::glue("aux_{info}")
-    )
-
-  aux_outros <- purrr::map_dfr(infos$info, ~{
-    f <- get(infos$fn[infos$info == .x])
-
-    aux_outros <- assign(infos$aux[infos$info == .x], f(arquivo)) |>
-      tidyr::nest(.by = c(processo, cd_processo), .key = .x)
-
-    return(aux_outros)
-  }) |>
-    tidyr::fill(everything(), .direction = "up") |>
-    dplyr::slice(1)
-
-  da <- list(aux_capa, aux_outros) |>
-    purrr::reduce(dplyr::left_join, by = c("processo", "cd_processo"))
-
-  return(da)
-}
-
-#' tjsp_cpopg_ler_capa() parseia dados de capa de um html do cpopg.
-#'
-#' @param arquivo Caminho para um arquivo html
-#' @param result Formato das colunas a serem retornadas. É escolhido 'Padronizado' por default.
-#' 'Padronizado' retorna uma tibble com 14 colunas, sendo:
-#' processo, cd_processo, tipo_processo, digital, situacao, classe, assunto,
-#' foro, vara, juiz, dt_dist, area, controle, valor_da_acao.
-#' 'Completo' retorna uma tibble sem pré-definir as colunas. As colunas
-#' retornadas serão  aquelas que aparecerem em cada processo.
-#' Há duas diferenças fundamentais entre as duas opções.
-#' A primeira diferença está em quais colunas são retornadas.
-#' Há informações que não aparecem em todos os processos, tais como local_fisico,
-#' outros_assuntos, outros_numeros, unificado_ao, apensado_ao, valor_da_acao,
-#' processo_principal, recurso, entre outras. Estas colunas são excluídas do
-#' result = "Padronizado", mas aparecem no result = "Completo".
-#' A segunda diferença está nas informações NA. Quando result = "Padronizado",
-#' como as colunas que aparecem são forçadas, então haverá colunas com resultado NA.
-#' Já quando result = "Completo", então haverá dois comportamentos distintos
-#' para a função. Via de regra, a coluna cujo valor for NA não aparecerá para
-#' aquele processo. Entretanto, quando a função é utilizada no contexto
-#' de um purrr::map_dfr(), então todas as colunas identificadas em todos os arquivos
-#' a serem parseados aparecerão para todos os processos, ainda que em alguns casos
-#' existam colunas com NA
-#' @param wide Formato da tibble. Só aplicável para return == 'Completo', caso contrário
-#' não tem nenhum efeito. Quando wide = TRUE, cada linha representa um processo, e cada coluna
-#' uma informação do processo. Quando wide = FALSE, cada linha representa uma coluna
-#' e seu respectivo valor.
-#'
-#' @return retorna uma tibble. Caso seja escolhido return == "Padronizado", esta tibble
-#' terá 14 colunas: processo, cd_processo, tipo_processo, digital, situacao, classe, assunto,
-#' foro, vara, juiz, dt_dist, area, controle, valor_da_acao. Caso seja escolhido return == "Completo"
-#' então a tibble não terá colunas pré-definidas.
-#'
 #' @examples
+#' \dontrun {
 #' 1003101-38.2023.8.26.0223 - Processo principal normal (67000FE100000)
 #' 0000235-93.2018.8.26.0047 - Processo principal de um incidente
 #' 0000235-93.2018.8.26.0047 (8000) - Incidente (1B00023PT1PQ8)
 #' 1014289-38.2022.8.26.0037 - Processo principal de um cumprimento de sentença (11000FHR30000)
 #' 0004995-42.2023.8.26.0037 - Cumprimento de sentença (11000GKOJ0000)
 #' 0006880-32.2020.8.26.0026 - Execução penal (0Q0001BEI0000)
-#'
-tjsp_cpopg_ler_capa <- function(arquivo = NULL, return = c("Padronizado", "Completo"), wide = TRUE) {
+#' }
+tjsp_cpopg_ler <- function(arquivos = NULL,
+                           formato = c("Padronizado", "Completo"),
+                           info = c("Tudo", "Movimentações", "Partes", "Delegacia", "Petições Diversas", "Incidentes", "Apensos", "Audiências", "Histórico Classes")) {
 
-  if(length(return) > 1) {
-    return <- "Padronizado"
+  if(is.null(arquivos)){
+
+    arquivos <- list.files(arquivos,
+                           full.names = TRUE,
+                           pattern = "html$")
+
   }
 
-  if(return == "Padronizado") {
+  purrr::map_dfr(arquivos, ~{tjsp_cpopg_ler_unitario(arquivo = .x, capa = capa, info = info)})
+
+}
+
+tjsp_cpopg_ler_unitario <- function(arquivo = NULL,
+                                    formato = c("Padronizado", "Completo"),
+                                    info = c("Tudo", "Movimentações", "Partes", "Delegacia", "Petições Diversas", "Incidentes", "Apensos", "Audiências", "Histórico Classes")) {
+
+  # usa tjsp_cpopg_ler_capa()
+  aux_capa <- tjsp_cpopg_ler_capa(arquivo, formato = formato)
+
+  if(is.null(info)) {
+    da <- aux_capa
+  } else {
+    # ajusta o parâmetro 'info'
+    if(any(info == "Tudo")) {
+
+      info <- c("Movimentações",
+                "Partes",
+                "Delegacia",
+                "Petições Diversas",
+                "Incidentes",
+                "Apensos",
+                "Audiências",
+                "Histórico Classes")
+    }
+
+    info <- info |>
+          abjutils::rm_accent() |>
+          stringr::str_to_lower() |>
+          stringr::str_replace_all(" ", "_")
+
+    # usa as funções relacionadas a 'info'
+    aux_outros <- purrr::map_dfr(info, ~{
+
+      fn_nm <- glue::glue("tjsp_cpopg_ler_{.x}")
+      f <- get(fn_nm)
+
+      aux_outros <- f(arquivo) |>
+        tidyr::nest(.by = c(processo, cd_processo), .key = .x)
+
+      return(aux_outros)
+    }) |>
+      tidyr::fill(everything(), .direction = "up") |>
+      dplyr::slice(1)
+
+    # Join
+    da <- aux_capa |>
+      dplyr::left_join(aux_outros, by = c("processo", "cd_processo"))
+  }
+  return(da)
+}
+
+# capa functions ----------------------------------------------------------
+
+tjsp_cpopg_ler_capa <- function(arquivo = NULL,
+                                formato = c("Padronizado", "Completo")) {
+
+  if(length(formato) > 1) {
+    formato <- "Padronizado"
+    warning("Nenhum 'formato' escolhido. Retornando dados de capa no formato Padronizado.")
+  }
+
+  if(formato == "Padronizado") {
     da <- tjsp_cpopg_ler_capa_padronizado(arquivo)
   } else {
-    da <- tjsp_cpopg_ler_capa_completo(arquivo, wide)
+    da <- tjsp_cpopg_ler_capa_completo(arquivo)
   }
 
   return(da)
 }
 
-#' tjsp_cpopg_ler_capa_padronizado() parseia dados de capa de um html do cpopg, retornando
-#' colunas padronizadas, mas sacrificando algumas colunas.
-#'
-#' @param arquivo Caminho para um arquivo html
-#'
-#' @return retorna uma tibble com 14 colunas, sendo:
-#' processo, cd_processo, tipo_processo, digital, situacao, classe, assunto,
-#' foro, vara, juiz, dt_dist, area, controle, valor_da_acao.
-#'
 tjsp_cpopg_ler_capa_padronizado <- function(arquivo = NULL) {
   html <- arquivo |>
     xml2::read_html()
@@ -261,14 +242,7 @@ tjsp_cpopg_ler_capa_padronizado <- function(arquivo = NULL) {
   return(da)
 }
 
-#' tjsp_cpopg_ler_capa_completo() parseia dados de capa de um html do cpopg, retornando
-#' colunas não padronizadas, mas sem sacrificar nenhuma coluna.
-#'
-#' @param arquivo Caminho para um arquivo html
-#'
-#' @return  retorna uma tibble sem pré-definir as colunas
-#'
-tjsp_cpopg_ler_capa_completo <- function(arquivo = NULL, wide = TRUE) {
+tjsp_cpopg_ler_capa_completo <- function(arquivo = NULL) {
 
   html <- arquivo |>
     xml2::read_html()
@@ -323,7 +297,6 @@ tjsp_cpopg_ler_capa_completo <- function(arquivo = NULL, wide = TRUE) {
     xml2::xml_text() |>
     stringr::str_squish()
 
-
   da <- tibble::tibble(
     processo,
     cd_processo,
@@ -332,32 +305,19 @@ tjsp_cpopg_ler_capa_completo <- function(arquivo = NULL, wide = TRUE) {
     situacao,
     variavel,
     valor
-  )
-
-  if(wide) {
-    da <- da |>
-      dplyr::group_by_at(dplyr::vars(-valor)) |>
-      dplyr::mutate(row_id = 1:dplyr::n()) |>
-      dplyr::ungroup() |>
-      tidyr::spread(key = variavel, value = valor) |>
-      dplyr::select(-row_id) |>
-      janitor::clean_names()
-  }
+  ) |>
+    dplyr::group_by_at(dplyr::vars(-valor)) |>
+    dplyr::mutate(row_id = 1:dplyr::n()) |>
+    dplyr::ungroup() |>
+    tidyr::spread(key = variavel, value = valor) |>
+    dplyr::select(-row_id) |>
+    janitor::clean_names()
 
   return(da)
 }
 
-#' Ler Partes do cpopg ou cposg, quando baixados por número do processo.
-#'
-#' @param arquivo Caminho para um arquivo html
-#'
-#' @return tibble
-#'
-#' @details São criadas cinco colunas : processo, cd_processo,
-#'     tipo_parte, parte e representante. Esta última
-#'     pode ser tanto o procurador quanto o representante
-#'     legal.
-#'
+# other functions ------------------------------------------------------------------
+
 tjsp_cpopg_ler_partes <- function(arquivo = NULL) {
 
   html <- arquivo |>
@@ -422,12 +382,6 @@ tjsp_cpopg_ler_partes <- function(arquivo = NULL) {
   return(da)
 }
 
-#' Extrai a movimentação processual de primeira e de segunda instância
-#'
-#' @param arquivo Caminho para um arquivo html
-#'
-#' @return tibble com a movimentação processual.
-#'
 tjsp_cpopg_ler_movimentacoes <- function (arquivo = NULL) {
 
   html <- arquivo |>
