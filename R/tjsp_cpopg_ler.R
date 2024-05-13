@@ -24,7 +24,7 @@
 #' de um purrr::map_dfr(), então todas as colunas identificadas em todos os arquivos
 #' a serem parseados aparecerão para todos os processos, ainda que em alguns casos
 #' existam colunas com NA
-#' @param info Informações a serem lidas do html. Por default, lê-se tudo ("Tudo").
+#' @param outros Informações a serem lidas do html. Por default, lê-se tudo ("Tudo").
 #' Se quiser ler apenas os metadados principais, info deve ser NULL.
 #' @return tibble
 #'
@@ -39,7 +39,7 @@
 #' }
 tjsp_cpopg_ler <- function(arquivos = NULL,
                            formato = c("Padronizado", "Completo"),
-                           info = c("Tudo", "Movimentações", "Partes", "Delegacia", "Petições Diversas", "Incidentes", "Apensos", "Audiências", "Histórico Classes")) {
+                           outros = c("Tudo", "Delegacia", "Partes", "Movimentacoes", "Peticoes Diversas", "Incidentes", "Apensos", "Audiencias", "Historico Classes")) {
 
   if(is.null(arquivos)){
 
@@ -49,53 +49,50 @@ tjsp_cpopg_ler <- function(arquivos = NULL,
 
   }
 
-  purrr::map_dfr(arquivos, ~{tjsp_cpopg_ler_unitario(arquivo = .x, capa = capa, info = info)})
+  purrr::map_dfr(arquivos, ~{tjsp_cpopg_ler_unitario(arquivo = .x, capa = capa, outros = outros)})
 
 }
 
 tjsp_cpopg_ler_unitario <- function(arquivo = NULL,
                                     formato = c("Padronizado", "Completo"),
-                                    info = c("Tudo", "Movimentações", "Partes", "Delegacia", "Petições Diversas", "Incidentes", "Apensos", "Audiências", "Histórico Classes")) {
+                                    outros = c("Tudo", "Delegacia", "Partes", "Movimentacoes", "Peticoes Diversas", "Incidentes", "Apensos", "Audiencias", "Historico Classes")) {
 
-  # usa tjsp_cpopg_ler_capa()
-  aux_capa <- tjsp_cpopg_ler_capa(arquivo, formato = formato)
+  # extrai informações de capa
+  if(length(formato) > 1) {
+    formato <- "Padronizado"
+    warning("Mais de um 'formato' escolhido. Forçando para o formato padronizado.")
+  }
 
-  if(is.null(info)) {
+  if(formato == "Padronizado") {
+    aux_capa <- tjsp_cpopg_ler_capa_padronizado(arquivo)
+  } else {
+    aux_capa <- tjsp_cpopg_ler_capa_completo(arquivo)
+  }
+
+  if(is.null(outros)) {
     da <- aux_capa
+  # extrai demais informações
   } else {
     # ajusta o parâmetro 'info'
-    if(any(info == "Tudo")) {
+    if(any(outros == "Tudo")) outros <- c("Movimentacoes", "Partes", "Delegacia", "Peticoes Diversas", "Incidentes", "Apensos", "Audiencias", "Historico Classes")
 
-      info <- c("Movimentações",
-                "Partes",
-                "Delegacia",
-                "Petições Diversas",
-                "Incidentes",
-                "Apensos",
-                "Audiências",
-                "Histórico Classes")
-    }
-
-    info <- info |>
+    outros <- outros |>
           abjutils::rm_accent() |>
           stringr::str_to_lower() |>
           stringr::str_replace_all(" ", "_")
 
-    # usa as funções relacionadas a 'info'
-    aux_outros <- purrr::map_dfr(info, ~{
-
+    # usa as funções para extrair as outras informações
+    aux_outros <- purrr::map_dfr(outros, ~{
       fn_nm <- glue::glue("tjsp_cpopg_ler_{.x}")
       f <- get(fn_nm)
-
       aux_outros <- f(arquivo) |>
         tidyr::nest(.by = c(processo, cd_processo), .key = .x)
-
       return(aux_outros)
     }) |>
       tidyr::fill(everything(), .direction = "up") |>
       dplyr::slice(1)
 
-    # Join
+    # join
     da <- aux_capa |>
       dplyr::left_join(aux_outros, by = c("processo", "cd_processo"))
   }
@@ -103,23 +100,6 @@ tjsp_cpopg_ler_unitario <- function(arquivo = NULL,
 }
 
 # capa functions ----------------------------------------------------------
-
-tjsp_cpopg_ler_capa <- function(arquivo = NULL,
-                                formato = c("Padronizado", "Completo")) {
-
-  if(length(formato) > 1) {
-    formato <- "Padronizado"
-    warning("Nenhum 'formato' escolhido. Retornando dados de capa no formato Padronizado.")
-  }
-
-  if(formato == "Padronizado") {
-    da <- tjsp_cpopg_ler_capa_padronizado(arquivo)
-  } else {
-    da <- tjsp_cpopg_ler_capa_completo(arquivo)
-  }
-
-  return(da)
-}
 
 tjsp_cpopg_ler_capa_padronizado <- function(arquivo = NULL) {
   html <- arquivo |>

@@ -6,13 +6,17 @@
 \usage{
 tjsp_cpopg_ler(
   arquivos = NULL,
-  capa = c("Padronizado", "Completo Long", "Completo Wide"),
-  info = c("all", "movimentacoes", "partes", "delegacia", "peticoes diversas",
-    "incidentes", "apensos", "audiencias", "historico classes")
+  formato = c("Padronizado", "Completo"),
+  info = c("Tudo", "Movimentações", "Partes", "Delegacia", "Petições Diversas",
+    "Incidentes", "Apensos", "Audiências", "Histórico Classes")
 )
 }
 \arguments{
-\item{arquivos}{Caminho para um arquivo html}
+\item{arquivos}{Vetor contendo o caminho para os arquivos em html do cpopg.
+Pode receber também apenas a pasta em que estão os arquivos.}
+
+\item{info}{Informações a serem lidas do html. Por default, lê-se tudo ("Tudo").
+Se quiser ler apenas os metadados principais, info deve ser NULL.}
 
 \item{capa}{Formato das colunas a serem retornadas. É escolhido 'Padronizado' por default.
 * 'Padronizado' retorna uma tibble com 14 colunas, sendo:

@@ -71,28 +71,6 @@
 
 
 
-    <script language="javascript" type="text/JavaScript"
-            src="https://esaj.tjsp.jus.br/sajcas/verificarLogin.js?script=1715608515792"></script>
-
-    <script language="javascript">
-        if (window.sajcas && window.sajcas.usuarioLogadoNoCasServer) {
-            var GATEWAY_TRUE = 'gateway=true', GATEWAY_FALSE = 'gateway=false';
-            var urlRetornoSistema = '';
-            if (urlRetornoSistema === '') {
-                urlRetornoSistema = window.location.href;
-            }
-
-            if (urlRetornoSistema.indexOf(GATEWAY_FALSE) !== -1) {
-                urlRetornoSistema = urlRetornoSistema.replace(GATEWAY_FALSE, GATEWAY_TRUE);
-            } else {
-                urlRetornoSistema.lastIndexOf('?') !== -1 ? urlRetornoSistema += '&' : urlRetornoSistema += '?';
-                urlRetornoSistema += GATEWAY_TRUE;
-            }
-
-            window.location.href = urlRetornoSistema;
-        }
-    </script>
-
 
 	<title>Portal de Serviços e-SAJ</title>
 
@@ -118,7 +96,7 @@
 	window.saj.env.css = '/cpopg/css';
 	window.saj.env.js = '/cpopg/js';
 	window.saj.env.imagens = '/cpopg/imagens';
-	window.saj.env.queryString = 'processo.codigo=67000FE100000&processo.foro=223&processo.numero=1003101-38.2023.8.26.0223';	
+	window.saj.env.queryString = 'processo.codigo=1B00023PT1PQ8&gateway=true';	
 
 	window.saj.cpo = window.saj.cpo || {};
 
@@ -244,6 +222,13 @@
 
 
     
+        <script src="https://fast.conpass.io/H1xuDQHJ8X.js"></script>
+        <script type="text/javascript">
+            Conpass.init({
+                email: "836437",
+            });
+        </script>
+    
 
 </head>
 
@@ -337,20 +322,20 @@
                 
                     
                         
-                        
                             
                         
+                        
                     
                     
                         
                         
-                            <a class="linkPasta btn btn-secondary btn-space" id="linkPasta" aria-hidden="true" title="Pasta digital" href="#liberarAutoPorSenha">
+                            <a class="linkPasta btn btn-secondary btn-space" id="linkPasta" aria-hidden="true" title="Pasta digital" href="/cpopg/abrirPastaDigital.do?processo.codigo=1B00023PT1PQ8">
                                 Visualizar autos
                             </a>
                             <!-- link da pasta digital exibido somente para leitores de tela (deficientes visuais), neste caso o link anterior é ignorado pelo leitor
                             Obs: necessário manter a table devido aos atributos de acessibilidade se comportarem adequadamente com a tabela, comportamento que não é possível colocando
                             os atributos somente na tag do link-->
-                            <a class="linkPasta btn btn-secondary btn-space" id="linkPastaAcessibilidade" style="font-size:0;height:0;width:0;padding:0;margin:0;border:none" href="#liberarAutoPorSenha&acessibilidade=true">
+                            <a class="linkPasta btn btn-secondary btn-space" id="linkPastaAcessibilidade" style="font-size:0;height:0;width:0;padding:0;margin:0;border:none" href="/cpopg/abrirPastaDigital.do?processo.codigo=1B00023PT1PQ8&acessibilidade=true">
                                 Visualizar autos
                             </a>
                         
@@ -376,6 +361,8 @@
 
 
 
+    
+
 
 <div class="unj-entity-header__summary__barra">
     <div id="containerDadosPrincipaisProcesso" class="container">
@@ -383,18 +370,23 @@
             <div class="col-lg-12 col-xl-13">
                 <!--principal -->
                 
-                    <span id="numeroProcesso" class="unj-larger-1">
-                        1003101-38.2023.8.26.0223
-                    </span>
-                    
-                    
-                    
-                    
-                
                 <!-- incidente -->
                 
+                    <span class="unj-label">Incidente</span>
+                    <div>
+                        <span class="unj-larger">
+                            
+                                Liberdade Provisória com ou sem fiança&nbsp;(0000235-93.2018.8.26.0047) (80000)
+                            
+                        </span>
+                        
+                            <span class="unj-tag">Extinto</span>
+                        
+                        
+                            <span class="unj-tag"><span style="padding-left: 5px; color: #FF0000;">Segredo de Justiça</span></span>
+                        
+                    </div>
                 
-                    <span class="unj-tag">Tramitação prioritária</span>
                 
                 
             </div>
@@ -402,25 +394,13 @@
         </div>
         <div class="row">
             
-                <div class="col-lg-3 col-xl-3 mb-3">
-                    <span id="labelClasseProcesso" class="unj-label">Classe</span>
-                    <div class="lh-1-1 line-clamp__2"><span id="classeProcesso" title="Procedimento Comum Cível">Procedimento Comum Cível</span></div>
-                </div>
-            
-            
-                <div class="col-lg-2 col-xl-3 mb-3">
-                    <span id="labelAssuntoProcesso" class="unj-label">
-                        Assunto
-                    </span>
-                    <div class="lh-1-1 line-clamp__2"> <span id="assuntoProcesso" title="Responsabilidade do Fornecedor">Responsabilidade do Fornecedor</span></div>
-                </div>
             
             
                 <div class="col-lg-2 col-xl-2 mb-2">
                     <span id="labelForoProcesso" class="unj-label">
                         Foro
                     </span>
-                    <div class="lh-1-1 line-clamp__2"> <span id="foroProcesso" title="Foro de Guarujá">Foro de Guarujá</span></div>
+                    <div class="lh-1-1 line-clamp__2"> <span id="foroProcesso" title="Foro de Assis">Foro de Assis</span></div>
                 </div>
             
             
@@ -428,18 +408,19 @@
                     <span id="labelVaraProcesso" class="unj-label">
                         Vara
                     </span>
-                    <div class="lh-1-1 line-clamp__2"><span id="varaProcesso" title="4ª Vara Cível">4ª Vara Cível</span></div>
+                    <div class="lh-1-1 line-clamp__2"><span id="varaProcesso" title="2ª  Vara Criminal e da Violência Doméstica e Familiar contra a Mulher">2ª  Vara Criminal e da Violência Doméstica e Familiar contra a Mulher</span></div>
                 </div>
             
 
-            
-                <div class="col-lg-3 mb-2">
-                    <span id="labelJuizProcesso" class="unj-label">Juiz</span>
-                    <div class="line-clamp__2"> <span id="juizProcesso" title="Marcelo Machado da Silva">Marcelo Machado da Silva</span> </div>
-                </div>
             
 
             <!-- Processo principal -->
+            
+                <div class="col-lg-4 col-xl-3 mb-2">
+                    
+                    <span class="unj-label">Processo principal</span>
+                    <div><a class="processoPrinc" href="/cpopg/show.do?processo.foro=47&processo.codigo=1B00023PT0000">0000235-93.2018.8.26.0047</a></div>
+                </div>
             
 
             
@@ -472,28 +453,23 @@
             <div class="row unj-row--border-top">
                 
                     <div class="col-lg-3 mb-2">
-                        <span id="labelDistribuicaoProcesso" class="unj-label">Distribuição </span>
-                        <div id="dataHoraDistribuicaoProcesso">02/03/2023 às 18:05 - Livre</div>
+                        <span id="labelDistribuicaoProcesso" class="unj-label">Recebido em </span>
+                        <div id="dataHoraDistribuicaoProcesso">16/01/2018 às 11:08</div>
                     </div>
                 
                 
                 
                     <div class="col-lg-3 mb-2">
                         <span id="labelControleProcesso" class="unj-label">Controle</span>
-                        <div id="numeroControleProcesso">2023/000316</div>
+                        <div id="numeroControleProcesso">2018/000083</div>
                     </div>
                 
                 
                     <div class="col-lg-2 col-xl-2 mb-2">
                         <span id="labelAreaProcesso" class="unj-label">Área</span>
-                        <div id="areaProcesso" class="lh-1-1 line-clamp__2"> <span title="Cível">Cível</span></div>
+                        <div id="areaProcesso" class="lh-1-1 line-clamp__2"> <span title="Criminal">Criminal</span></div>
                     </div>
                 
-                
-                    <div class="col-lg-2 mb-2">
-                        <span id="lavelValorAcaoProcesso" class="unj-label">Valor da ação</span>
-                        <div id="valorAcaoProcesso">R$         5.995,80</div>
-                    </div>
                 
                 
                 
@@ -678,7 +654,7 @@
     appEsajLayout.urlNovoMenuHtml = 'https://esaj.tjsp.jus.br/esaj/menuPortalV2Html.do?servico=190101';
 
     var appEsajCas = appEsajCas || {};
-    appEsajCas.urlServicoConteudoIdentificacao = 'https://esaj.tjsp.jus.br/sajcas/conteudoIdentificacaoJson?script=1713283868701&retorno=' + encodeURIComponent(location.href);
+    appEsajCas.urlServicoConteudoIdentificacao = 'https://esaj.tjsp.jus.br/sajcas/conteudoIdentificacaoJson?script=1713283891107&retorno=' + encodeURIComponent(location.href);
 </script>
 <script src="https://esaj.tjsp.jus.br/esaj/js/portalV2-bundle.js?n=806192629"></script>
 
@@ -742,6 +718,45 @@
 
 
 
+
+
+
+	
+	
+	
+
+
+
+
+
+
+
+<div style="padding-top: 10px;">
+	
+	
+		
+		
+			<h2 class="subtitle tituloDoBloco">Dados da delegacia</h2>
+		
+	
+</div>
+
+	<!--  cabecalho da lista (Delegacias) -->
+
+	<!--  dados da lista (Delegacias) -->
+	
+		
+		
+			<table style="margin-left:15px; margin-top:1px;" align="center" width="98%" border="0" cellspacing="0" cellpadding="1"  >
+				<tbody id="dadosDaDelegaciaNaoDisponiveis">
+					<tr>
+						<td colspan="3" align="left">Não há dados da delegacia vinculados a este processo.</td>
+					</tr>
+				</tbody>
+			</table>
+		
+	
+	<!--  dados da lista (Delegacias) -->
 
 
 
@@ -824,7 +839,7 @@
 			
 				
 				
-					Eder Gledson Castanho
+					Gabriel Silva da Cruz
 				
 			
 
@@ -837,50 +852,17 @@
 				
 					
 					
-						Eder Gledson Castanho
+						Waldir Maldonado Arruda
 					
 				&nbsp;
 				
 			
-		
-		
-	</td>
-</tr>
-
-	
-		
-
-
-
-
-
-
-
-
-
-<tr class="fundoClaro">
-	<td valign="top" width="141" style="padding-bottom: 5px" class="label">
-		<span class="mensagemExibindo tipoDeParticipacao">Reqdo&nbsp;</span>
-	</td>
-	<td class="nomeParteEAdvogado" width="*" align="left" style="padding-bottom: 5px">
-		
-			
-				
-				
-					Hurb Technologies S/A
-				
-			
-
-			
-		 
-		
-			
 				<br />
 				<span class="mensagemExibindo">Advogado:&nbsp;</span>
 				
 					
 					
-						Otávio Simões Brissant
+						Rodrigo Cristaldo Arruda
 					
 				&nbsp;
 				
@@ -992,15 +974,15 @@
 
 
 	
-	
 		
+	
 	
 
 
 
 	<tr class="fundoClaro containerMovimentacao" style="">
 		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			17/04/2024
+			07/10/2020
 		</td>
 		<td width="20" valign="top" aria-hidden="true">
 			
@@ -1010,15 +992,13 @@
 			
 				
 				
-					Certidão de Publicação Expedida
+					Conclusos para Despacho
 				
 			
 			
 			<br />
 			<span style="font-style: italic;">
-				Rela&ccedil;&atilde;o: 0296/2024
-Data da Publica&ccedil;&atilde;o: 19/04/2024
-N&uacute;mero do Di&aacute;rio: 3949
+				
 			</span>
 			
 		</td>
@@ -1039,15 +1019,15 @@ N&uacute;mero do Di&aacute;rio: 3949
 
 
 	
-	
 		
+	
 	
 
 
 
 	<tr class="fundoEscuro containerMovimentacao" style="">
 		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			17/04/2024
+			06/10/2020
 		</td>
 		<td width="20" valign="top" aria-hidden="true">
 			
@@ -1057,15 +1037,13 @@ N&uacute;mero do Di&aacute;rio: 3949
 			
 				
 				
-					Remetido ao DJE
+					Conclusos para Decisão
 				
 			
 			
 			<br />
 			<span style="font-style: italic;">
-				Rela&ccedil;&atilde;o: 0296/2024
-Teor do ato: Ante o exposto, JULGO PROCEDENTE o pedido para condenar a r&eacute; na obriga&ccedil;&atilde;o de fornecer ao autor o pacote de viagens por este adquirido, nos termos da fundamenta&ccedil;&atilde;o supra, sob pena de incidir em multa di&aacute;ria de R$ 500,00, limitada ao teto de R$ 10.000,00. Diante da sucumb&ecirc;ncia, arcar&aacute; a r&eacute; com as custas, despesas processuais e honor&aacute;rios sucumbenciais arbitrados, por equidade, em R$ 2.000,00. P.I.
-Advogados(s): Eder Gledson Castanho (OAB 262359/SP), Ot&aacute;vio Sim&otilde;es Brissant (OAB 146066/RJ)
+				
 			</span>
 			
 		</td>
@@ -1094,41 +1072,26 @@ Advogados(s): Eder Gledson Castanho (OAB 262359/SP), Ot&aacute;vio Sim&otilde;es
 
 	<tr class="fundoClaro containerMovimentacao" style="">
 		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			17/04/2024
+			22/01/2019
 		</td>
 		<td width="20" valign="top" aria-hidden="true">
-			
-				
-					
-					
-						
-					
-				
-
-				<a class="linkMovVincProc"
-					id="linkMovVincProc-77793378"
-					title="Visualizar documento em inteiro teor"
-					href="/cpopg/abrirDocumentoVinculadoMovimentacao.do?processo.codigo=67000FE100000&cdDocumento=77793378&nmRecursoAcessado=Julgada+Procedente+a+A%C3%A7%C3%A3o">
-					<img width="16" height="16" border="0" src="/cpopg/imagens/doc.png" />
-				</a>
 			
 		</td>
 		<td class="descricaoMovimentacao" style="vertical-align: top; padding-bottom: 5px">
 			
 			
 				
-					<a class="linkMovVincProc"
-						id="linkMovVincProc-2-77793378"
-						title="Visualizar documento em inteiro teor"
-						href="/cpopg/abrirDocumentoVinculadoMovimentacao.do?processo.codigo=67000FE100000&cdDocumento=77793378&nmRecursoAcessado=Julgada+Procedente+a+A%C3%A7%C3%A3o"> Julgada Procedente a Ação
-					</a>
 				
+					Petição Juntada
 				
 			
 			
 			<br />
 			<span style="font-style: italic;">
-				Ante o exposto, JULGO PROCEDENTE o pedido para condenar a r&eacute; na obriga&ccedil;&atilde;o de fornecer ao autor o pacote de viagens por este adquirido, nos termos da fundamenta&ccedil;&atilde;o supra, sob pena de incidir em multa di&aacute;ria de R$ 500,00, limitada ao teto de R$ 10.000,00. Diante da sucumb&ecirc;ncia, arcar&aacute; a r&eacute; com as custas, despesas processuais e honor&aacute;rios sucumbenciais arbitrados, por equidade, em R$ 2.000,00. P.I.
+				N&ordm; Protocolo: WASI.18.70087494-9
+Tipo da Peti&ccedil;&atilde;o: Peti&ccedil;&otilde;es Diversas
+Data: 31/10/2018 14:41
+
 			</span>
 			
 		</td>
@@ -1149,15 +1112,15 @@ Advogados(s): Eder Gledson Castanho (OAB 262359/SP), Ot&aacute;vio Sim&otilde;es
 
 
 	
-	
 		
+	
 	
 
 
 
 	<tr class="fundoEscuro containerMovimentacao" style="">
 		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			14/03/2024
+			07/12/2018
 		</td>
 		<td width="20" valign="top" aria-hidden="true">
 			
@@ -1167,7 +1130,7 @@ Advogados(s): Eder Gledson Castanho (OAB 262359/SP), Ot&aacute;vio Sim&otilde;es
 			
 				
 				
-					Conclusos para Sentença
+					Conclusos para Despacho
 				
 			
 			
@@ -1194,49 +1157,31 @@ Advogados(s): Eder Gledson Castanho (OAB 262359/SP), Ot&aacute;vio Sim&otilde;es
 
 
 	
-	
 		
+	
 	
 
 
 
 	<tr class="fundoClaro containerMovimentacao" style="">
 		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			14/03/2024
+			19/11/2018
 		</td>
 		<td width="20" valign="top" aria-hidden="true">
-			
-				
-					
-					
-						
-					
-				
-
-				<a class="linkMovVincProc"
-					id="linkMovVincProc-75784006"
-					title="Visualizar documento em inteiro teor"
-					href="#liberarAutoPorSenha">
-					<img width="16" height="16" border="0" src="/cpopg/imagens/doc.png" />
-				</a>
 			
 		</td>
 		<td class="descricaoMovimentacao" style="vertical-align: top; padding-bottom: 5px">
 			
 			
 				
-					<a class="linkMovVincProc"
-						id="linkMovVincProc-2-75784006"
-						title="Visualizar documento em inteiro teor"
-						href="#liberarAutoPorSenha"> Decurso de Prazo
-					</a>
 				
+					Conclusos para Despacho
 				
 			
 			
 			<br />
 			<span style="font-style: italic;">
-				Processo Digital - Certid&atilde;o - Decurso de Prazo - Manifesta&ccedil;&atilde;o da parte autora (requerente ou exequente) - Autom&aacute;tica
+				
 			</span>
 			
 		</td>
@@ -1262,100 +1207,6 @@ Advogados(s): Eder Gledson Castanho (OAB 262359/SP), Ot&aacute;vio Sim&otilde;es
 
 
 	
-	
-		
-	
-
-
-
-	<tr class="fundoClaro containerMovimentacao" style="">
-		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			17/04/2024
-		</td>
-		<td width="20" valign="top" aria-hidden="true">
-			
-		</td>
-		<td class="descricaoMovimentacao" style="vertical-align: top; padding-bottom: 5px">
-			
-			
-				
-				
-					Certidão de Publicação Expedida
-				
-			
-			
-			<br />
-			<span style="font-style: italic;">
-				Rela&ccedil;&atilde;o: 0296/2024
-Data da Publica&ccedil;&atilde;o: 19/04/2024
-N&uacute;mero do Di&aacute;rio: 3949
-			</span>
-			
-		</td>
-	</tr>
-	
-
-
-				
-					
-
-
-
-
-
-
-
-
-
-
-	
-	
-		
-	
-
-
-
-	<tr class="fundoEscuro containerMovimentacao" style="">
-		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			17/04/2024
-		</td>
-		<td width="20" valign="top" aria-hidden="true">
-			
-		</td>
-		<td class="descricaoMovimentacao" style="vertical-align: top; padding-bottom: 5px">
-			
-			
-				
-				
-					Remetido ao DJE
-				
-			
-			
-			<br />
-			<span style="font-style: italic;">
-				Rela&ccedil;&atilde;o: 0296/2024
-Teor do ato: Ante o exposto, JULGO PROCEDENTE o pedido para condenar a r&eacute; na obriga&ccedil;&atilde;o de fornecer ao autor o pacote de viagens por este adquirido, nos termos da fundamenta&ccedil;&atilde;o supra, sob pena de incidir em multa di&aacute;ria de R$ 500,00, limitada ao teto de R$ 10.000,00. Diante da sucumb&ecirc;ncia, arcar&aacute; a r&eacute; com as custas, despesas processuais e honor&aacute;rios sucumbenciais arbitrados, por equidade, em R$ 2.000,00. P.I.
-Advogados(s): Eder Gledson Castanho (OAB 262359/SP), Ot&aacute;vio Sim&otilde;es Brissant (OAB 146066/RJ)
-			</span>
-			
-		</td>
-	</tr>
-	
-
-
-				
-					
-
-
-
-
-
-
-
-
-
-
-	
 		
 	
 	
@@ -1364,178 +1215,7 @@ Advogados(s): Eder Gledson Castanho (OAB 262359/SP), Ot&aacute;vio Sim&otilde;es
 
 	<tr class="fundoClaro containerMovimentacao" style="">
 		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			17/04/2024
-		</td>
-		<td width="20" valign="top" aria-hidden="true">
-			
-				
-					
-					
-						
-					
-				
-
-				<a class="linkMovVincProc"
-					id="linkMovVincProc-77793378"
-					title="Visualizar documento em inteiro teor"
-					href="/cpopg/abrirDocumentoVinculadoMovimentacao.do?processo.codigo=67000FE100000&cdDocumento=77793378&nmRecursoAcessado=Julgada+Procedente+a+A%C3%A7%C3%A3o">
-					<img width="16" height="16" border="0" src="/cpopg/imagens/doc.png" />
-				</a>
-			
-		</td>
-		<td class="descricaoMovimentacao" style="vertical-align: top; padding-bottom: 5px">
-			
-			
-				
-					<a class="linkMovVincProc"
-						id="linkMovVincProc-2-77793378"
-						title="Visualizar documento em inteiro teor"
-						href="/cpopg/abrirDocumentoVinculadoMovimentacao.do?processo.codigo=67000FE100000&cdDocumento=77793378&nmRecursoAcessado=Julgada+Procedente+a+A%C3%A7%C3%A3o"> Julgada Procedente a Ação
-					</a>
-				
-				
-			
-			
-			<br />
-			<span style="font-style: italic;">
-				Ante o exposto, JULGO PROCEDENTE o pedido para condenar a r&eacute; na obriga&ccedil;&atilde;o de fornecer ao autor o pacote de viagens por este adquirido, nos termos da fundamenta&ccedil;&atilde;o supra, sob pena de incidir em multa di&aacute;ria de R$ 500,00, limitada ao teto de R$ 10.000,00. Diante da sucumb&ecirc;ncia, arcar&aacute; a r&eacute; com as custas, despesas processuais e honor&aacute;rios sucumbenciais arbitrados, por equidade, em R$ 2.000,00. P.I.
-			</span>
-			
-		</td>
-	</tr>
-	
-
-
-				
-					
-
-
-
-
-
-
-
-
-
-
-	
-	
-		
-	
-
-
-
-	<tr class="fundoEscuro containerMovimentacao" style="">
-		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			14/03/2024
-		</td>
-		<td width="20" valign="top" aria-hidden="true">
-			
-		</td>
-		<td class="descricaoMovimentacao" style="vertical-align: top; padding-bottom: 5px">
-			
-			
-				
-				
-					Conclusos para Sentença
-				
-			
-			
-			<br />
-			<span style="font-style: italic;">
-				
-			</span>
-			
-		</td>
-	</tr>
-	
-
-
-				
-					
-
-
-
-
-
-
-
-
-
-
-	
-	
-		
-	
-
-
-
-	<tr class="fundoClaro containerMovimentacao" style="">
-		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			14/03/2024
-		</td>
-		<td width="20" valign="top" aria-hidden="true">
-			
-				
-					
-					
-						
-					
-				
-
-				<a class="linkMovVincProc"
-					id="linkMovVincProc-75784006"
-					title="Visualizar documento em inteiro teor"
-					href="#liberarAutoPorSenha">
-					<img width="16" height="16" border="0" src="/cpopg/imagens/doc.png" />
-				</a>
-			
-		</td>
-		<td class="descricaoMovimentacao" style="vertical-align: top; padding-bottom: 5px">
-			
-			
-				
-					<a class="linkMovVincProc"
-						id="linkMovVincProc-2-75784006"
-						title="Visualizar documento em inteiro teor"
-						href="#liberarAutoPorSenha"> Decurso de Prazo
-					</a>
-				
-				
-			
-			
-			<br />
-			<span style="font-style: italic;">
-				Processo Digital - Certid&atilde;o - Decurso de Prazo - Manifesta&ccedil;&atilde;o da parte autora (requerente ou exequente) - Autom&aacute;tica
-			</span>
-			
-		</td>
-	</tr>
-	
-
-
-				
-					
-
-
-
-
-
-
-
-
-
-
-	
-	
-		
-	
-
-
-
-	<tr class="fundoEscuro containerMovimentacao" style="">
-		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			09/02/2024
+			07/10/2020
 		</td>
 		<td width="20" valign="top" aria-hidden="true">
 			
@@ -1572,172 +1252,15 @@ Advogados(s): Eder Gledson Castanho (OAB 262359/SP), Ot&aacute;vio Sim&otilde;es
 
 
 	
-	
 		
 	
-
-
-
-	<tr class="fundoClaro containerMovimentacao" style="">
-		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			23/11/2023
-		</td>
-		<td width="20" valign="top" aria-hidden="true">
-			
-		</td>
-		<td class="descricaoMovimentacao" style="vertical-align: top; padding-bottom: 5px">
-			
-			
-				
-				
-					Certidão de Publicação Expedida
-				
-			
-			
-			<br />
-			<span style="font-style: italic;">
-				Rela&ccedil;&atilde;o: 0900/2023
-Data da Publica&ccedil;&atilde;o: 21/11/2023
-N&uacute;mero do Di&aacute;rio: 3861
-			</span>
-			
-		</td>
-	</tr>
-	
-
-
-				
-					
-
-
-
-
-
-
-
-
-
-
-	
-	
-		
 	
 
 
 
 	<tr class="fundoEscuro containerMovimentacao" style="">
 		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			15/11/2023
-		</td>
-		<td width="20" valign="top" aria-hidden="true">
-			
-		</td>
-		<td class="descricaoMovimentacao" style="vertical-align: top; padding-bottom: 5px">
-			
-			
-				
-				
-					Remetido ao DJE
-				
-			
-			
-			<br />
-			<span style="font-style: italic;">
-				Rela&ccedil;&atilde;o: 0900/2023
-Teor do ato: Vistos. Especifiquem, as partes, as provas que pretendem produzir, fundamentando sua pertin&ecirc;ncia e adequa&ccedil;&atilde;o ao caso concreto. Requerimentos gen&eacute;ricos de provas n&atilde;o ser&atilde;o aceitos, se desacompanhados de justifica&ccedil;&atilde;o. O sil&ecirc;ncio implicar&aacute; na presun&ccedil;&atilde;o da desnecessidade de produ&ccedil;&atilde;o de provas. Intime-se.
-Advogados(s): Eder Gledson Castanho (OAB 262359/SP), Ot&aacute;vio Sim&otilde;es Brissant (OAB 146066/RJ)
-			</span>
-			
-		</td>
-	</tr>
-	
-
-
-				
-					
-
-
-
-
-
-
-
-
-
-
-	
-		
-	
-	
-
-
-
-	<tr class="fundoClaro containerMovimentacao" style="">
-		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			14/11/2023
-		</td>
-		<td width="20" valign="top" aria-hidden="true">
-			
-				
-					
-					
-						
-					
-				
-
-				<a class="linkMovVincProc"
-					id="linkMovVincProc-74246627"
-					title="Visualizar documento em inteiro teor"
-					href="/cpopg/abrirDocumentoVinculadoMovimentacao.do?processo.codigo=67000FE100000&cdDocumento=74246627&nmRecursoAcessado=Proferidas+Outras+Decis%C3%B5es+n%C3%A3o+Especificadas">
-					<img width="16" height="16" border="0" src="/cpopg/imagens/doc.png" />
-				</a>
-			
-		</td>
-		<td class="descricaoMovimentacao" style="vertical-align: top; padding-bottom: 5px">
-			
-			
-				
-					<a class="linkMovVincProc"
-						id="linkMovVincProc-2-74246627"
-						title="Visualizar documento em inteiro teor"
-						href="/cpopg/abrirDocumentoVinculadoMovimentacao.do?processo.codigo=67000FE100000&cdDocumento=74246627&nmRecursoAcessado=Proferidas+Outras+Decis%C3%B5es+n%C3%A3o+Especificadas"> Proferidas Outras Decisões não Especificadas
-					</a>
-				
-				
-			
-			
-			<br />
-			<span style="font-style: italic;">
-				Vistos. Especifiquem, as partes, as provas que pretendem produzir, fundamentando sua pertin&ecirc;ncia e adequa&ccedil;&atilde;o ao caso concreto. Requerimentos gen&eacute;ricos de provas n&atilde;o ser&atilde;o aceitos, se desacompanhados de justifica&ccedil;&atilde;o. O sil&ecirc;ncio implicar&aacute; na presun&ccedil;&atilde;o da desnecessidade de produ&ccedil;&atilde;o de provas. Intime-se.
-			</span>
-			
-		</td>
-	</tr>
-	
-
-
-				
-					
-
-
-
-
-
-
-
-
-
-
-	
-	
-		
-	
-
-
-
-	<tr class="fundoEscuro containerMovimentacao" style="">
-		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			14/11/2023
+			06/10/2020
 		</td>
 		<td width="20" valign="top" aria-hidden="true">
 			
@@ -1774,220 +1297,15 @@ Advogados(s): Eder Gledson Castanho (OAB 262359/SP), Ot&aacute;vio Sim&otilde;es
 
 
 	
-	
 		
+	
 	
 
 
 
 	<tr class="fundoClaro containerMovimentacao" style="">
 		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			31/10/2023
-		</td>
-		<td width="20" valign="top" aria-hidden="true">
-			
-		</td>
-		<td class="descricaoMovimentacao" style="vertical-align: top; padding-bottom: 5px">
-			
-			
-				
-				
-					Réplica Juntada
-				
-			
-			
-			<br />
-			<span style="font-style: italic;">
-				N&ordm; Protocolo: WGJA.23.70198011-0
-Tipo da Peti&ccedil;&atilde;o: Manifesta&ccedil;&atilde;o Sobre a Contesta&ccedil;&atilde;o
-Data: 31/10/2023 10:39
-
-			</span>
-			
-		</td>
-	</tr>
-	
-
-
-				
-					
-
-
-
-
-
-
-
-
-
-
-	
-	
-		
-	
-
-
-
-	<tr class="fundoEscuro containerMovimentacao" style="">
-		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			30/10/2023
-		</td>
-		<td width="20" valign="top" aria-hidden="true">
-			
-		</td>
-		<td class="descricaoMovimentacao" style="vertical-align: top; padding-bottom: 5px">
-			
-			
-				
-				
-					Certidão de Publicação Expedida
-				
-			
-			
-			<br />
-			<span style="font-style: italic;">
-				Rela&ccedil;&atilde;o: 0854/2023
-Data da Publica&ccedil;&atilde;o: 31/10/2023
-N&uacute;mero do Di&aacute;rio: 3850
-			</span>
-			
-		</td>
-	</tr>
-	
-
-
-				
-					
-
-
-
-
-
-
-
-
-
-
-	
-	
-		
-	
-
-
-
-	<tr class="fundoClaro containerMovimentacao" style="">
-		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			27/10/2023
-		</td>
-		<td width="20" valign="top" aria-hidden="true">
-			
-		</td>
-		<td class="descricaoMovimentacao" style="vertical-align: top; padding-bottom: 5px">
-			
-			
-				
-				
-					Remetido ao DJE
-				
-			
-			
-			<br />
-			<span style="font-style: italic;">
-				Rela&ccedil;&atilde;o: 0854/2023
-Teor do ato: Vistos. 1 - Fls. 51/123: Indefiro o pedido de suspens&atilde;o do processo em raz&atilde;o da exist&ecirc;ncia das a&ccedil;&otilde;es civis p&uacute;blicas n&uacute;mero 0871577-31.2022.8.19.0001 e n&uacute;mero 0854669-59.2023.8.19.0001. Isto porque n&atilde;o h&aacute; determina&ccedil;&atilde;o de suspens&atilde;o dos processos individuais, dos titulares de direitos individuais homog&ecirc;neos, para que postulem individualmente o que entenderem pertinente, tampouco h&aacute; rela&ccedil;&atilde;o com os presentes autos. Ademais, n&atilde;o se desconhece que o C. Superior Tribunal de Justi&ccedil;a, no julgamento do Recurso Especial n&ordm; 1.110.549/RS (Tema n. 60), fixou a tese de que &quot;Ajuizada a&ccedil;&atilde;o coletiva atinente a macro-lide geradora de processos multitudin&aacute;rios, suspendem-se as a&ccedil;&otilde;es individuais, no aguardo do julgamento da a&ccedil;&atilde;o coletiva&quot;. Ocorre que, no mesmo julgado, ressalvou-se a norma do artigo 104 do C&oacute;digo de Defesa do Consumidor, com o que se conclui pela inexist&ecirc;ncia de peremptoriedade na suspens&atilde;o, a qual, a rigor, corresponde a uma faculdade do consumidor. Para al&eacute;m disso, cumpre salientar que a orienta&ccedil;&atilde;o acima exposta foi firmada com o escopo de tutelar direitos dos consumidores concernentes a expurgos inflacion&aacute;rios oriundos de planos econ&ocirc;micos, o que, obviamente, n&atilde;o guarda rela&ccedil;&atilde;o com a hip&oacute;tese dos autos. Registre-se, ainda, que a mesma interpreta&ccedil;&atilde;o deve ser conferida ao tema n.589, do STJ, que aborda a mat&eacute;ria de piso salarial nacional para os profissionais do magist&eacute;rio p&uacute;blico da educa&ccedil;&atilde;o b&aacute;sica. Nessa linha, tem-se por prevalente o entendimento de que deve ser respeitada a op&ccedil;&atilde;o pessoal da parte pela a&ccedil;&atilde;o individual, sendo incab&iacute;vel a suspens&atilde;o da a&ccedil;&atilde;o para observ&acirc;ncia obrigat&oacute;ria da a&ccedil;&atilde;o coletiva. Ao r&eacute;u cabe dar ci&ecirc;ncia da propositura da a&ccedil;&atilde;o coletiva &agrave;queles que propuseram a&ccedil;&otilde;es individuais, a fim de que possam fazer a op&ccedil;&atilde;o pela continuidade do processo individual ou requerer a sua suspens&atilde;o para eventualmente se beneficiarem da senten&ccedil;a coletiva. Ainda que haja a possibilidade de contradi&ccedil;&atilde;o entre as deliberais judiciais individual e coletivo -, o sistema jur&iacute;dico brasileiro n&atilde;o adota a preval&ecirc;ncia da a&ccedil;&atilde;o coletiva, tornando tal meio processual facultativo, o que permite a op&ccedil;&atilde;o dos jurisdicionados pela via processual individual. Nesse sentido: AGRAVO DE INSTRUMENTO - SUSPENS&Atilde;O Pretens&atilde;o de reforma da r. decis&atilde;o que suspendeu o processo at&eacute; o julgamento da a&ccedil;&atilde;o civil coletiva. Cabimento Hip&oacute;tese em que a suspens&atilde;o do processo &eacute; uma faculdade do consumidor para se beneficiar dos efeitos da coisa julgada na a&ccedil;&atilde;o coletiva (CDC, art. 104) Consumidor que optou pelo prosseguimento da a&ccedil;&atilde;o individual RECURSO PROVIDO (TJSP, Agravo de Instrumento n&ordm; 2070817-89.2022.8.26.0000, 13&ordf; CDPriv., Rel. Ana de Lourdes Coutinho Silva da Fonseca, j. 29/6/22). 2 No mais, manifeste-se a parte autora. Intime-se.
-Advogados(s): Eder Gledson Castanho (OAB 262359/SP)
-			</span>
-			
-		</td>
-	</tr>
-	
-
-
-				
-					
-
-
-
-
-
-
-
-
-
-
-	
-		
-	
-	
-
-
-
-	<tr class="fundoEscuro containerMovimentacao" style="">
-		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			27/10/2023
-		</td>
-		<td width="20" valign="top" aria-hidden="true">
-			
-				
-					
-					
-						
-					
-				
-
-				<a class="linkMovVincProc"
-					id="linkMovVincProc-73482839"
-					title="Visualizar documento em inteiro teor"
-					href="/cpopg/abrirDocumentoVinculadoMovimentacao.do?processo.codigo=67000FE100000&cdDocumento=73482839&nmRecursoAcessado=Proferidas+Outras+Decis%C3%B5es+n%C3%A3o+Especificadas">
-					<img width="16" height="16" border="0" src="/cpopg/imagens/doc.png" />
-				</a>
-			
-		</td>
-		<td class="descricaoMovimentacao" style="vertical-align: top; padding-bottom: 5px">
-			
-			
-				
-					<a class="linkMovVincProc"
-						id="linkMovVincProc-2-73482839"
-						title="Visualizar documento em inteiro teor"
-						href="/cpopg/abrirDocumentoVinculadoMovimentacao.do?processo.codigo=67000FE100000&cdDocumento=73482839&nmRecursoAcessado=Proferidas+Outras+Decis%C3%B5es+n%C3%A3o+Especificadas"> Proferidas Outras Decisões não Especificadas
-					</a>
-				
-				
-			
-			
-			<br />
-			<span style="font-style: italic;">
-				Vistos. 1 - Fls. 51/123: Indefiro o pedido de suspens&atilde;o do processo em raz&atilde;o da exist&ecirc;ncia das a&ccedil;&otilde;es civis p&uacute;blicas n&uacute;mero 0871577-31.2022.8.19.0001 e n&uacute;mero 0854669-59.2023.8.19.0001. Isto porque n&atilde;o h&aacute; determina&ccedil;&atilde;o de suspens&atilde;o dos processos individuais, dos titulares de direitos individuais homog&ecirc;neos, para que postulem individualmente o que entenderem pertinente, tampouco h&aacute; rela&ccedil;&atilde;o com os presentes autos. Ademais, n&atilde;o se desconhece que o C. Superior Tribunal de Justi&ccedil;a, no julgamento do Recurso Especial n&ordm; 1.110.549/RS (Tema n. 60), fixou a tese de que &quot;Ajuizada a&ccedil;&atilde;o coletiva atinente a macro-lide geradora de processos multitudin&aacute;rios, suspendem-se as a&ccedil;&otilde;es individuais, no aguardo do julgamento da a&ccedil;&atilde;o coletiva&quot;. Ocorre que, no mesmo julgado, ressalvou-se a norma do artigo 104 do C&oacute;digo de Defesa do Consumidor, com o que se conclui pela inexist&ecirc;ncia de peremptoriedade na suspens&atilde;o, a qual, a rigor, corresponde a uma faculdade do consumidor. Para al&eacute;m disso, cumpre salientar que a orienta&ccedil;&atilde;o acima exposta foi firmada com o escopo de tutelar direitos dos consumidores concernentes a expurgos inflacion&aacute;rios oriundos de planos econ&ocirc;micos, o que, obviamente, n&atilde;o guarda rela&ccedil;&atilde;o com a hip&oacute;tese dos autos. Registre-se, ainda, que a mesma interpreta&ccedil;&atilde;o deve ser conferida ao tema n.589, do STJ, que aborda a mat&eacute;ria de piso salarial nacional para os profissionais do magist&eacute;rio p&uacute;blico da educa&ccedil;&atilde;o b&aacute;sica. Nessa linha, tem-se por prevalente o entendimento de que deve ser respeitada a op&ccedil;&atilde;o pessoal da parte pela a&ccedil;&atilde;o individual, sendo incab&iacute;vel a suspens&atilde;o da a&ccedil;&atilde;o para observ&acirc;ncia obrigat&oacute;ria da a&ccedil;&atilde;o coletiva. Ao r&eacute;u cabe dar ci&ecirc;ncia da propositura da a&ccedil;&atilde;o coletiva &agrave;queles que propuseram a&ccedil;&otilde;es individuais, a fim de que possam fazer a op&ccedil;&atilde;o pela continuidade do processo individual ou requerer a sua suspens&atilde;o para eventualmente se beneficiarem da senten&ccedil;a coletiva. Ainda que haja a possibilidade de contradi&ccedil;&atilde;o entre as deliberais judiciais individual e coletivo -, o sistema jur&iacute;dico brasileiro n&atilde;o adota a preval&ecirc;ncia da a&ccedil;&atilde;o coletiva, tornando tal meio processual facultativo, o que permite a op&ccedil;&atilde;o dos jurisdicionados pela via processual individual. Nesse sentido: AGRAVO DE INSTRUMENTO - SUSPENS&Atilde;O Pretens&atilde;o de reforma da r. decis&atilde;o que suspendeu o processo at&eacute; o julgamento da a&ccedil;&atilde;o civil coletiva. Cabimento Hip&oacute;tese em que a suspens&atilde;o do processo &eacute; uma faculdade do consumidor para se beneficiar dos efeitos da coisa julgada na a&ccedil;&atilde;o coletiva (CDC, art. 104) Consumidor que optou pelo prosseguimento da a&ccedil;&atilde;o individual RECURSO PROVIDO (TJSP, Agravo de Instrumento n&ordm; 2070817-89.2022.8.26.0000, 13&ordf; CDPriv., Rel. Ana de Lourdes Coutinho Silva da Fonseca, j. 29/6/22). 2 No mais, manifeste-se a parte autora. Intime-se.
-			</span>
-			
-		</td>
-	</tr>
-	
-
-
-				
-					
-
-
-
-
-
-
-
-
-
-
-	
-	
-		
-	
-
-
-
-	<tr class="fundoClaro containerMovimentacao" style="">
-		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			24/09/2023
+			22/01/2019
 		</td>
 		<td width="20" valign="top" aria-hidden="true">
 			
@@ -2003,9 +1321,9 @@ Advogados(s): Eder Gledson Castanho (OAB 262359/SP)
 			
 			<br />
 			<span style="font-style: italic;">
-				N&ordm; Protocolo: WGJA.23.70172059-2
+				N&ordm; Protocolo: WASI.18.70087494-9
 Tipo da Peti&ccedil;&atilde;o: Peti&ccedil;&otilde;es Diversas
-Data: 24/09/2023 18:26
+Data: 31/10/2018 14:41
 
 			</span>
 			
@@ -2027,60 +1345,15 @@ Data: 24/09/2023 18:26
 
 
 	
-	
 		
+	
 	
 
 
 
 	<tr class="fundoEscuro containerMovimentacao" style="">
 		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			21/08/2023
-		</td>
-		<td width="20" valign="top" aria-hidden="true">
-			
-		</td>
-		<td class="descricaoMovimentacao" style="vertical-align: top; padding-bottom: 5px">
-			
-			
-				
-				
-					Conclusos para Sentença
-				
-			
-			
-			<br />
-			<span style="font-style: italic;">
-				
-			</span>
-			
-		</td>
-	</tr>
-	
-
-
-				
-					
-
-
-
-
-
-
-
-
-
-
-	
-	
-		
-	
-
-
-
-	<tr class="fundoClaro containerMovimentacao" style="">
-		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			16/08/2023
+			07/12/2018
 		</td>
 		<td width="20" valign="top" aria-hidden="true">
 			
@@ -2117,163 +1390,6 @@ Data: 24/09/2023 18:26
 
 
 	
-	
-		
-	
-
-
-
-	<tr class="fundoEscuro containerMovimentacao" style="">
-		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			16/08/2023
-		</td>
-		<td width="20" valign="top" aria-hidden="true">
-			
-				
-					
-					
-						
-					
-				
-
-				<a class="linkMovVincProc"
-					id="linkMovVincProc-72029739"
-					title="Visualizar documento em inteiro teor"
-					href="#liberarAutoPorSenha">
-					<img width="16" height="16" border="0" src="/cpopg/imagens/doc.png" />
-				</a>
-			
-		</td>
-		<td class="descricaoMovimentacao" style="vertical-align: top; padding-bottom: 5px">
-			
-			
-				
-					<a class="linkMovVincProc"
-						id="linkMovVincProc-2-72029739"
-						title="Visualizar documento em inteiro teor"
-						href="#liberarAutoPorSenha"> Decurso de Prazo
-					</a>
-				
-				
-			
-			
-			<br />
-			<span style="font-style: italic;">
-				Certid&atilde;o de Cart&oacute;rio - Decurso de Prazo - Contesta&ccedil;&atilde;o - Autom&aacute;tica
-			</span>
-			
-		</td>
-	</tr>
-	
-
-
-				
-					
-
-
-
-
-
-
-
-
-
-
-	
-	
-		
-	
-
-
-
-	<tr class="fundoClaro containerMovimentacao" style="">
-		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			26/06/2023
-		</td>
-		<td width="20" valign="top" aria-hidden="true">
-			
-		</td>
-		<td class="descricaoMovimentacao" style="vertical-align: top; padding-bottom: 5px">
-			
-			
-				
-				
-					Certidão de Publicação Expedida
-				
-			
-			
-			<br />
-			<span style="font-style: italic;">
-				Rela&ccedil;&atilde;o: 0479/2023
-Data da Publica&ccedil;&atilde;o: 27/06/2023
-N&uacute;mero do Di&aacute;rio: 3764
-			</span>
-			
-		</td>
-	</tr>
-	
-
-
-				
-					
-
-
-
-
-
-
-
-
-
-
-	
-	
-		
-	
-
-
-
-	<tr class="fundoEscuro containerMovimentacao" style="">
-		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			23/06/2023
-		</td>
-		<td width="20" valign="top" aria-hidden="true">
-			
-		</td>
-		<td class="descricaoMovimentacao" style="vertical-align: top; padding-bottom: 5px">
-			
-			
-				
-				
-					Remetido ao DJE
-				
-			
-			
-			<br />
-			<span style="font-style: italic;">
-				Rela&ccedil;&atilde;o: 0479/2023
-Teor do ato: Vistos. Por ora, e ante os novos per&iacute;odos poss&iacute;veis para a realiza&ccedil;&atilde;o da viagem indicados pelo autor, aguarde-se a contesta&ccedil;&atilde;o, sem preju&iacute;zo de futura majora&ccedil;&atilde;o do valor da multa, o que ser&aacute; apreciado ap&oacute;s a resposta. Int.
-Advogados(s): Eder Gledson Castanho (OAB 262359/SP)
-			</span>
-			
-		</td>
-	</tr>
-	
-
-
-				
-					
-
-
-
-
-
-
-
-
-
-
-	
 		
 	
 	
@@ -2282,760 +1398,7 @@ Advogados(s): Eder Gledson Castanho (OAB 262359/SP)
 
 	<tr class="fundoClaro containerMovimentacao" style="">
 		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			22/06/2023
-		</td>
-		<td width="20" valign="top" aria-hidden="true">
-			
-				
-					
-					
-						
-					
-				
-
-				<a class="linkMovVincProc"
-					id="linkMovVincProc-70590160"
-					title="Visualizar documento em inteiro teor"
-					href="/cpopg/abrirDocumentoVinculadoMovimentacao.do?processo.codigo=67000FE100000&cdDocumento=70590160&nmRecursoAcessado=Proferido+Despacho+de+Mero+Expediente">
-					<img width="16" height="16" border="0" src="/cpopg/imagens/doc.png" />
-				</a>
-			
-		</td>
-		<td class="descricaoMovimentacao" style="vertical-align: top; padding-bottom: 5px">
-			
-			
-				
-					<a class="linkMovVincProc"
-						id="linkMovVincProc-2-70590160"
-						title="Visualizar documento em inteiro teor"
-						href="/cpopg/abrirDocumentoVinculadoMovimentacao.do?processo.codigo=67000FE100000&cdDocumento=70590160&nmRecursoAcessado=Proferido+Despacho+de+Mero+Expediente"> Proferido Despacho de Mero Expediente
-					</a>
-				
-				
-			
-			
-			<br />
-			<span style="font-style: italic;">
-				Vistos. Por ora, e ante os novos per&iacute;odos poss&iacute;veis para a realiza&ccedil;&atilde;o da viagem indicados pelo autor, aguarde-se a contesta&ccedil;&atilde;o, sem preju&iacute;zo de futura majora&ccedil;&atilde;o do valor da multa, o que ser&aacute; apreciado ap&oacute;s a resposta. Int.
-			</span>
-			
-		</td>
-	</tr>
-	
-
-
-				
-					
-
-
-
-
-
-
-
-
-
-
-	
-	
-		
-	
-
-
-
-	<tr class="fundoEscuro containerMovimentacao" style="">
-		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			21/06/2023
-		</td>
-		<td width="20" valign="top" aria-hidden="true">
-			
-		</td>
-		<td class="descricaoMovimentacao" style="vertical-align: top; padding-bottom: 5px">
-			
-			
-				
-				
-					Conclusos para Decisão
-				
-			
-			
-			<br />
-			<span style="font-style: italic;">
-				
-			</span>
-			
-		</td>
-	</tr>
-	
-
-
-				
-					
-
-
-
-
-
-
-
-
-
-
-	
-	
-		
-	
-
-
-
-	<tr class="fundoClaro containerMovimentacao" style="">
-		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			14/06/2023
-		</td>
-		<td width="20" valign="top" aria-hidden="true">
-			
-		</td>
-		<td class="descricaoMovimentacao" style="vertical-align: top; padding-bottom: 5px">
-			
-			
-				
-				
-					Pedido de Liminar/Tutela Antecipada Juntado
-				
-			
-			
-			<br />
-			<span style="font-style: italic;">
-				N&ordm; Protocolo: WGJA.23.70099565-2
-Tipo da Peti&ccedil;&atilde;o: Pedido de Liminar/Antecipa&ccedil;&atilde;o de Tutela
-Data: 14/06/2023 16:07
-
-			</span>
-			
-		</td>
-	</tr>
-	
-
-
-				
-					
-
-
-
-
-
-
-
-
-
-
-	
-	
-		
-	
-
-
-
-	<tr class="fundoEscuro containerMovimentacao" style="">
-		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			18/05/2023
-		</td>
-		<td width="20" valign="top" aria-hidden="true">
-			
-		</td>
-		<td class="descricaoMovimentacao" style="vertical-align: top; padding-bottom: 5px">
-			
-			
-				
-				
-					AR Positivo Juntado
-				
-			
-			
-			<br />
-			<span style="font-style: italic;">
-				Juntada de AR : AA525192818TJ
-Situa&ccedil;&atilde;o : Cumprido
-Modelo : Processo Digital - Carta - Cita&ccedil;&atilde;o e Intima&ccedil;&atilde;o - Tutela Cautelar Antecedente - C&iacute;vel - NOVO CPC
-Destinat&aacute;rio : Hurb Technologies S/A
-Dilig&ecirc;ncia : 15/05/2023
-			</span>
-			
-		</td>
-	</tr>
-	
-
-
-				
-					
-
-
-
-
-
-
-
-
-
-
-	
-	
-		
-	
-
-
-
-	<tr class="fundoClaro containerMovimentacao" style="">
-		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			11/05/2023
-		</td>
-		<td width="20" valign="top" aria-hidden="true">
-			
-		</td>
-		<td class="descricaoMovimentacao" style="vertical-align: top; padding-bottom: 5px">
-			
-			
-				
-				
-					Certidão de Publicação Expedida
-				
-			
-			
-			<br />
-			<span style="font-style: italic;">
-				Rela&ccedil;&atilde;o: 0345/2023
-Data da Publica&ccedil;&atilde;o: 12/05/2023
-N&uacute;mero do Di&aacute;rio: 3734
-			</span>
-			
-		</td>
-	</tr>
-	
-
-
-				
-					
-
-
-
-
-
-
-
-
-
-
-	
-	
-		
-	
-
-
-
-	<tr class="fundoEscuro containerMovimentacao" style="">
-		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			10/05/2023
-		</td>
-		<td width="20" valign="top" aria-hidden="true">
-			
-		</td>
-		<td class="descricaoMovimentacao" style="vertical-align: top; padding-bottom: 5px">
-			
-			
-				
-				
-					Remetido ao DJE
-				
-			
-			
-			<br />
-			<span style="font-style: italic;">
-				Rela&ccedil;&atilde;o: 0345/2023
-Teor do ato: Comprove o autor a distribui&ccedil;&atilde;o da carta(s) precat&oacute;ria(s).
-Advogados(s): Eder Gledson Castanho (OAB 262359/SP)
-			</span>
-			
-		</td>
-	</tr>
-	
-
-
-				
-					
-
-
-
-
-
-
-
-
-
-
-	
-	
-		
-	
-
-
-
-	<tr class="fundoClaro containerMovimentacao" style="">
-		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			09/05/2023
-		</td>
-		<td width="20" valign="top" aria-hidden="true">
-			
-				
-					
-					
-						
-					
-				
-
-				<a class="linkMovVincProc"
-					id="linkMovVincProc-69379301"
-					title="Visualizar documento em inteiro teor"
-					href="#liberarAutoPorSenha">
-					<img width="16" height="16" border="0" src="/cpopg/imagens/doc.png" />
-				</a>
-			
-		</td>
-		<td class="descricaoMovimentacao" style="vertical-align: top; padding-bottom: 5px">
-			
-			
-				
-					<a class="linkMovVincProc"
-						id="linkMovVincProc-2-69379301"
-						title="Visualizar documento em inteiro teor"
-						href="#liberarAutoPorSenha"> Ato Ordinatório - Intimação - DJE
-					</a>
-				
-				
-			
-			
-			<br />
-			<span style="font-style: italic;">
-				Comprove o autor a distribui&ccedil;&atilde;o da carta(s) precat&oacute;ria(s).
-			</span>
-			
-		</td>
-	</tr>
-	
-
-
-				
-					
-
-
-
-
-
-
-
-
-
-
-	
-	
-		
-	
-
-
-
-	<tr class="fundoEscuro containerMovimentacao" style="">
-		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			05/05/2023
-		</td>
-		<td width="20" valign="top" aria-hidden="true">
-			
-		</td>
-		<td class="descricaoMovimentacao" style="vertical-align: top; padding-bottom: 5px">
-			
-			
-				
-				
-					Certidão de Publicação Expedida
-				
-			
-			
-			<br />
-			<span style="font-style: italic;">
-				Rela&ccedil;&atilde;o: 0330/2023
-Data da Publica&ccedil;&atilde;o: 08/05/2023
-N&uacute;mero do Di&aacute;rio: 3730
-			</span>
-			
-		</td>
-	</tr>
-	
-
-
-				
-					
-
-
-
-
-
-
-
-
-
-
-	
-	
-		
-	
-
-
-
-	<tr class="fundoClaro containerMovimentacao" style="">
-		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			04/05/2023
-		</td>
-		<td width="20" valign="top" aria-hidden="true">
-			
-		</td>
-		<td class="descricaoMovimentacao" style="vertical-align: top; padding-bottom: 5px">
-			
-			
-				
-				
-					Remetido ao DJE
-				
-			
-			
-			<br />
-			<span style="font-style: italic;">
-				Rela&ccedil;&atilde;o: 0330/2023
-Teor do ato: Vistos. Presente a probabilidade do direito, pois a documenta&ccedil;&atilde;o juntada aos autos demonstra que houve a aquisi&ccedil;&atilde;o do pacote de viagem em 2020, que ele foi devidamente pago, e que at&eacute; a presente data a parte autora n&atilde;o conseguiu realizar a viagem. Presente o risco ao resultado &uacute;til, pois existe data limite para a realiza&ccedil;&atilde;o da viagem, e com o passar do tempo, mais restritas ficam as possibilidades de realiza&ccedil;&atilde;o do passeio em raz&atilde;o da necessidade de reagendamentos de compromissos. Ademais, como dito, o pacote foi adquirido em 2020. Considerando, entretanto, que a primeira data ofertada pelo autor j&aacute; foi ultrapassada, e a falta de tempo h&aacute;bil para a efetiva&ccedil;&atilde;o dos procedimentos para a segunda data, defiro a tutela de urg&ecirc;ncia para determinar &agrave; r&eacute; que providencie todo o necess&aacute;rio para que a viagem do autor seja realizada na &uacute;ltima data por ele oportunizada, ou seja, no dia 24/5/2023, nos exatos termos do pacote adquirido, com a observ&acirc;ncia das demais regras contratuais estabelecidas entre as partes. O descumprimento acarretar&aacute; multa no valor de R$10.000,00, acrescida de R$1.000,00(um mil reais) por dia, at&eacute; o limite de R$50.000,00(cinquenta mil reais), ou at&eacute; o dia em que a r&eacute; agendar a viagem antes de atingido o prazo do teto da multa. Cite-se e intime-se a r&eacute; por carta com AR, e pessoalmente, por precat&oacute;ria, com urg&ecirc;ncia. Intimem-se.
-Advogados(s): Eder Gledson Castanho (OAB 262359/SP)
-			</span>
-			
-		</td>
-	</tr>
-	
-
-
-				
-					
-
-
-
-
-
-
-
-
-
-
-	
-	
-		
-	
-
-
-
-	<tr class="fundoEscuro containerMovimentacao" style="">
-		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			03/05/2023
-		</td>
-		<td width="20" valign="top" aria-hidden="true">
-			
-				
-					
-					
-						
-					
-				
-
-				<a class="linkMovVincProc"
-					id="linkMovVincProc-69246879"
-					title="Visualizar documento em inteiro teor"
-					href="#liberarAutoPorSenha">
-					<img width="16" height="16" border="0" src="/cpopg/imagens/doc.png" />
-				</a>
-			
-		</td>
-		<td class="descricaoMovimentacao" style="vertical-align: top; padding-bottom: 5px">
-			
-			
-				
-					<a class="linkMovVincProc"
-						id="linkMovVincProc-2-69246879"
-						title="Visualizar documento em inteiro teor"
-						href="#liberarAutoPorSenha"> Carta de Citação Expedida
-					</a>
-				
-				
-			
-			
-			<br />
-			<span style="font-style: italic;">
-				Processo Digital - Carta - Cita&ccedil;&atilde;o e Intima&ccedil;&atilde;o - Tutela Cautelar Antecedente - C&iacute;vel - NOVO CPC
-			</span>
-			
-		</td>
-	</tr>
-	
-
-
-				
-					
-
-
-
-
-
-
-
-
-
-
-	
-	
-		
-	
-
-
-
-	<tr class="fundoClaro containerMovimentacao" style="">
-		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			03/05/2023
-		</td>
-		<td width="20" valign="top" aria-hidden="true">
-			
-				
-					
-					
-						
-					
-				
-
-				<a class="linkMovVincProc"
-					id="linkMovVincProc-69246880"
-					title="Visualizar documento em inteiro teor"
-					href="#liberarAutoPorSenha">
-					<img width="16" height="16" border="0" src="/cpopg/imagens/doc.png" />
-				</a>
-			
-		</td>
-		<td class="descricaoMovimentacao" style="vertical-align: top; padding-bottom: 5px">
-			
-			
-				
-					<a class="linkMovVincProc"
-						id="linkMovVincProc-2-69246880"
-						title="Visualizar documento em inteiro teor"
-						href="#liberarAutoPorSenha"> Carta Precatória Expedida
-					</a>
-				
-				
-			
-			
-			<br />
-			<span style="font-style: italic;">
-				Processo Digital - Carta Precat&oacute;ria - Cita&ccedil;&atilde;o e Intima&ccedil;&atilde;o - Rito Comum - Tutela Antecipada-Cautelar - NOVO CPC
-			</span>
-			
-		</td>
-	</tr>
-	
-
-
-				
-					
-
-
-
-
-
-
-
-
-
-
-	
-		
-	
-	
-
-
-
-	<tr class="fundoEscuro containerMovimentacao" style="">
-		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			03/05/2023
-		</td>
-		<td width="20" valign="top" aria-hidden="true">
-			
-				
-					
-					
-						
-					
-				
-
-				<a class="linkMovVincProc"
-					id="linkMovVincProc-69244732"
-					title="Visualizar documento em inteiro teor"
-					href="/cpopg/abrirDocumentoVinculadoMovimentacao.do?processo.codigo=67000FE100000&cdDocumento=69244732&nmRecursoAcessado=Concedida+a+Antecipa%C3%A7%C3%A3o+de+tutela">
-					<img width="16" height="16" border="0" src="/cpopg/imagens/doc.png" />
-				</a>
-			
-		</td>
-		<td class="descricaoMovimentacao" style="vertical-align: top; padding-bottom: 5px">
-			
-			
-				
-					<a class="linkMovVincProc"
-						id="linkMovVincProc-2-69244732"
-						title="Visualizar documento em inteiro teor"
-						href="/cpopg/abrirDocumentoVinculadoMovimentacao.do?processo.codigo=67000FE100000&cdDocumento=69244732&nmRecursoAcessado=Concedida+a+Antecipa%C3%A7%C3%A3o+de+tutela"> Concedida a Antecipação de tutela
-					</a>
-				
-				
-			
-			
-			<br />
-			<span style="font-style: italic;">
-				Vistos. Presente a probabilidade do direito, pois a documenta&ccedil;&atilde;o juntada aos autos demonstra que houve a aquisi&ccedil;&atilde;o do pacote de viagem em 2020, que ele foi devidamente pago, e que at&eacute; a presente data a parte autora n&atilde;o conseguiu realizar a viagem. Presente o risco ao resultado &uacute;til, pois existe data limite para a realiza&ccedil;&atilde;o da viagem, e com o passar do tempo, mais restritas ficam as possibilidades de realiza&ccedil;&atilde;o do passeio em raz&atilde;o da necessidade de reagendamentos de compromissos. Ademais, como dito, o pacote foi adquirido em 2020. Considerando, entretanto, que a primeira data ofertada pelo autor j&aacute; foi ultrapassada, e a falta de tempo h&aacute;bil para a efetiva&ccedil;&atilde;o dos procedimentos para a segunda data, defiro a tutela de urg&ecirc;ncia para determinar &agrave; r&eacute; que providencie todo o necess&aacute;rio para que a viagem do autor seja realizada na &uacute;ltima data por ele oportunizada, ou seja, no dia 24/5/2023, nos exatos termos do pacote adquirido, com a observ&acirc;ncia das demais regras contratuais estabelecidas entre as partes. O descumprimento acarretar&aacute; multa no valor de R$10.000,00, acrescida de R$1.000,00(um mil reais) por dia, at&eacute; o limite de R$50.000,00(cinquenta mil reais), ou at&eacute; o dia em que a r&eacute; agendar a viagem antes de atingido o prazo do teto da multa. Cite-se e intime-se a r&eacute; por carta com AR, e pessoalmente, por precat&oacute;ria, com urg&ecirc;ncia. Intimem-se.
-			</span>
-			
-		</td>
-	</tr>
-	
-
-
-				
-					
-
-
-
-
-
-
-
-
-
-
-	
-	
-		
-	
-
-
-
-	<tr class="fundoClaro containerMovimentacao" style="">
-		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			03/05/2023
-		</td>
-		<td width="20" valign="top" aria-hidden="true">
-			
-				
-					
-					
-						
-					
-				
-
-				<a class="linkMovVincProc"
-					id="linkMovVincProc-69229776"
-					title="Visualizar documento em inteiro teor"
-					href="#liberarAutoPorSenha">
-					<img width="16" height="16" border="0" src="/cpopg/imagens/doc.png" />
-				</a>
-			
-		</td>
-		<td class="descricaoMovimentacao" style="vertical-align: top; padding-bottom: 5px">
-			
-			
-				
-					<a class="linkMovVincProc"
-						id="linkMovVincProc-2-69229776"
-						title="Visualizar documento em inteiro teor"
-						href="#liberarAutoPorSenha"> Certidão de Cartório Expedida
-					</a>
-				
-				
-			
-			
-			<br />
-			<span style="font-style: italic;">
-				Certifico e dou f&eacute; que, em conformidade com o comunicado 881/2020 e 1079/2020, consultei a guia(s) de fls. 25 no sistema do Portal de Custas e verifiquei que a mesma encontra-se queimada automaticamente pelo sistema. Nada Mais
-			</span>
-			
-		</td>
-	</tr>
-	
-
-
-				
-					
-
-
-
-
-
-
-
-
-
-
-	
-	
-		
-	
-
-
-
-	<tr class="fundoEscuro containerMovimentacao" style="">
-		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			02/05/2023
-		</td>
-		<td width="20" valign="top" aria-hidden="true">
-			
-		</td>
-		<td class="descricaoMovimentacao" style="vertical-align: top; padding-bottom: 5px">
-			
-			
-				
-				
-					Conclusos para Decisão
-				
-			
-			
-			<br />
-			<span style="font-style: italic;">
-				
-			</span>
-			
-		</td>
-	</tr>
-	
-
-
-				
-					
-
-
-
-
-
-
-
-
-
-
-	
-	
-		
-	
-
-
-
-	<tr class="fundoClaro containerMovimentacao" style="">
-		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			19/04/2023
+			19/11/2018
 		</td>
 		<td width="20" valign="top" aria-hidden="true">
 			
@@ -3072,357 +1435,15 @@ Advogados(s): Eder Gledson Castanho (OAB 262359/SP)
 
 
 	
-	
 		
+	
 	
 
 
 
 	<tr class="fundoEscuro containerMovimentacao" style="">
 		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			13/04/2023
-		</td>
-		<td width="20" valign="top" aria-hidden="true">
-			
-		</td>
-		<td class="descricaoMovimentacao" style="vertical-align: top; padding-bottom: 5px">
-			
-			
-				
-				
-					Emenda à Inicial Juntada
-				
-			
-			
-			<br />
-			<span style="font-style: italic;">
-				N&ordm; Protocolo: WGJA.23.70058272-2
-Tipo da Peti&ccedil;&atilde;o: Emenda &agrave; Inicial
-Data: 13/04/2023 09:13
-
-			</span>
-			
-		</td>
-	</tr>
-	
-
-
-				
-					
-
-
-
-
-
-
-
-
-
-
-	
-	
-		
-	
-
-
-
-	<tr class="fundoClaro containerMovimentacao" style="">
-		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			13/04/2023
-		</td>
-		<td width="20" valign="top" aria-hidden="true">
-			
-		</td>
-		<td class="descricaoMovimentacao" style="vertical-align: top; padding-bottom: 5px">
-			
-			
-				
-				
-					Certidão de Publicação Expedida
-				
-			
-			
-			<br />
-			<span style="font-style: italic;">
-				Rela&ccedil;&atilde;o: 0265/2023
-Data da Publica&ccedil;&atilde;o: 14/04/2023
-N&uacute;mero do Di&aacute;rio: 3716
-			</span>
-			
-		</td>
-	</tr>
-	
-
-
-				
-					
-
-
-
-
-
-
-
-
-
-
-	
-	
-		
-	
-
-
-
-	<tr class="fundoEscuro containerMovimentacao" style="">
-		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			12/04/2023
-		</td>
-		<td width="20" valign="top" aria-hidden="true">
-			
-		</td>
-		<td class="descricaoMovimentacao" style="vertical-align: top; padding-bottom: 5px">
-			
-			
-				
-				
-					Remetido ao DJE
-				
-			
-			
-			<br />
-			<span style="font-style: italic;">
-				Rela&ccedil;&atilde;o: 0265/2023
-Teor do ato: Vistos, Emende a parte autora a peti&ccedil;&atilde;o inicial, no prazo de 15 (quinze) dias, sob pena de indeferimento, para o fim de atender ao disposto no artigo 320, do CPC, anexando aos autos seus documentos pessoais com foto (RG e CPF); comprovar, por documento nominal, id&ocirc;neo e atualizado, que reside nesta comarca. Int.
-Advogados(s): Eder Gledson Castanho (OAB 262359/SP)
-			</span>
-			
-		</td>
-	</tr>
-	
-
-
-				
-					
-
-
-
-
-
-
-
-
-
-
-	
-		
-	
-	
-
-
-
-	<tr class="fundoClaro containerMovimentacao" style="">
-		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			11/04/2023
-		</td>
-		<td width="20" valign="top" aria-hidden="true">
-			
-				
-					
-					
-						
-					
-				
-
-				<a class="linkMovVincProc"
-					id="linkMovVincProc-68744933"
-					title="Visualizar documento em inteiro teor"
-					href="/cpopg/abrirDocumentoVinculadoMovimentacao.do?processo.codigo=67000FE100000&cdDocumento=68744933&nmRecursoAcessado=Determinada+a+Emenda+%C3%A0+Inicial">
-					<img width="16" height="16" border="0" src="/cpopg/imagens/doc.png" />
-				</a>
-			
-		</td>
-		<td class="descricaoMovimentacao" style="vertical-align: top; padding-bottom: 5px">
-			
-			
-				
-					<a class="linkMovVincProc"
-						id="linkMovVincProc-2-68744933"
-						title="Visualizar documento em inteiro teor"
-						href="/cpopg/abrirDocumentoVinculadoMovimentacao.do?processo.codigo=67000FE100000&cdDocumento=68744933&nmRecursoAcessado=Determinada+a+Emenda+%C3%A0+Inicial"> Determinada a Emenda à Inicial
-					</a>
-				
-				
-			
-			
-			<br />
-			<span style="font-style: italic;">
-				Vistos, Emende a parte autora a peti&ccedil;&atilde;o inicial, no prazo de 15 (quinze) dias, sob pena de indeferimento, para o fim de atender ao disposto no artigo 320, do CPC, anexando aos autos seus documentos pessoais com foto (RG e CPF); comprovar, por documento nominal, id&ocirc;neo e atualizado, que reside nesta comarca. Int.
-			</span>
-			
-		</td>
-	</tr>
-	
-
-
-				
-					
-
-
-
-
-
-
-
-
-
-
-	
-	
-		
-	
-
-
-
-	<tr class="fundoEscuro containerMovimentacao" style="">
-		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			11/04/2023
-		</td>
-		<td width="20" valign="top" aria-hidden="true">
-			
-		</td>
-		<td class="descricaoMovimentacao" style="vertical-align: top; padding-bottom: 5px">
-			
-			
-				
-				
-					Conclusos para Decisão
-				
-			
-			
-			<br />
-			<span style="font-style: italic;">
-				
-			</span>
-			
-		</td>
-	</tr>
-	
-
-
-				
-					
-
-
-
-
-
-
-
-
-
-
-	
-	
-		
-	
-
-
-
-	<tr class="fundoClaro containerMovimentacao" style="">
-		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			06/03/2023
-		</td>
-		<td width="20" valign="top" aria-hidden="true">
-			
-		</td>
-		<td class="descricaoMovimentacao" style="vertical-align: top; padding-bottom: 5px">
-			
-			
-				
-				
-					Conclusos para Despacho
-				
-			
-			
-			<br />
-			<span style="font-style: italic;">
-				
-			</span>
-			
-		</td>
-	</tr>
-	
-
-
-				
-					
-
-
-
-
-
-
-
-
-
-
-	
-	
-		
-	
-
-
-
-	<tr class="fundoEscuro containerMovimentacao" style="">
-		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			06/03/2023
-		</td>
-		<td width="20" valign="top" aria-hidden="true">
-			
-		</td>
-		<td class="descricaoMovimentacao" style="vertical-align: top; padding-bottom: 5px">
-			
-			
-				
-				
-					Certidão de Publicação Expedida
-				
-			
-			
-			<br />
-			<span style="font-style: italic;">
-				Rela&ccedil;&atilde;o: 0151/2023
-Data da Publica&ccedil;&atilde;o: 07/03/2023
-N&uacute;mero do Di&aacute;rio: 3690
-			</span>
-			
-		</td>
-	</tr>
-	
-
-
-				
-					
-
-
-
-
-
-
-
-
-
-
-	
-	
-		
-	
-
-
-
-	<tr class="fundoClaro containerMovimentacao" style="">
-		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			03/03/2023
+			31/10/2018
 		</td>
 		<td width="20" valign="top" aria-hidden="true">
 			
@@ -3438,57 +1459,10 @@ N&uacute;mero do Di&aacute;rio: 3690
 			
 			<br />
 			<span style="font-style: italic;">
-				N&ordm; Protocolo: WGJA.23.70031461-2
+				N&ordm; Protocolo: WASI.18.70087494-9
 Tipo da Peti&ccedil;&atilde;o: Peti&ccedil;&otilde;es Diversas
-Data: 03/03/2023 14:03
+Data: 31/10/2018 14:41
 
-			</span>
-			
-		</td>
-	</tr>
-	
-
-
-				
-					
-
-
-
-
-
-
-
-
-
-
-	
-	
-		
-	
-
-
-
-	<tr class="fundoEscuro containerMovimentacao" style="">
-		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			03/03/2023
-		</td>
-		<td width="20" valign="top" aria-hidden="true">
-			
-		</td>
-		<td class="descricaoMovimentacao" style="vertical-align: top; padding-bottom: 5px">
-			
-			
-				
-				
-					Remetido ao DJE
-				
-			
-			
-			<br />
-			<span style="font-style: italic;">
-				Rela&ccedil;&atilde;o: 0151/2023
-Teor do ato: Vistos, O art.5&ordm;, LXXIV, da Constitui&ccedil;&atilde;o Federal, disp&otilde;e &quot;o Estado prestar&aacute; assist&ecirc;ncia jur&iacute;dica integral e gratuita aos que comprovarem insufici&ecirc;ncia de recursos&quot;. Embora para a concess&atilde;o da gratuidade n&atilde;o se exija o estado de mis&eacute;ria absoluta, &eacute; necess&aacute;ria a comprova&ccedil;&atilde;o da impossibilidade de arcar com as custas e despesas do processo sem preju&iacute;zo de seu sustento pr&oacute;prio ou de sua fam&iacute;lia. A declara&ccedil;&atilde;o de pobreza, por sua vez, estabelece mera presun&ccedil;&atilde;o relativa da hipossufici&ecirc;ncia, que cede ante outros elementos que sirvam para indicar a capacidade financeira. No caso, h&aacute; elementos suficientes para afastar a presun&ccedil;&atilde;o, em especial: (i) natureza e objeto discutidos; (ii) contrata&ccedil;&atilde;o de advogado particular, dispensando a atua&ccedil;&atilde;o da Defensoria. Antes de indeferir o pedido, contudo, conv&eacute;m facultar ao interessado o direito de provar a impossibilidade de arcar, sem o seu pr&oacute;prio preju&iacute;zo ou de sua fam&iacute;lia, com as custas e despesas do processo. Assim, para aprecia&ccedil;&atilde;o do pedido de Justi&ccedil;a Gratuita, a parte requerente dever&aacute;, em 10 (dez) dias, apresentar, sob pena de indeferimento do benef&iacute;cio: a) O relat&oacute;rio contendo informa&ccedil;&otilde;es sobre relacionamentos com as institui&ccedil;&otilde;es financeiras, atrav&eacute;s do sistema registrato, obtido atrav&eacute;s do link:https://registrato.bcb.gov.br/registrato/login/. b) c&oacute;pia das &uacute;ltimas folhas da carteira do trabalho, ou comprovante de renda mensal, e de eventual c&ocirc;njuge; c) c&oacute;pia dos extratos banc&aacute;rios de contas de titularidade, e de eventual c&ocirc;njuge, dos &uacute;ltimos tr&ecirc;s meses; d) c&oacute;pia dos extratos de cart&atilde;o de cr&eacute;dito, dos &uacute;ltimos tr&ecirc;s meses; e) c&oacute;pia da &uacute;ltima declara&ccedil;&atilde;o do imposto de renda apresentada &agrave; Secretaria da Receita Federal. Ou, no mesmo prazo, dever&aacute; recolher as custas judiciais e despesas processuais, sob pena de extin&ccedil;&atilde;o, sem nova intima&ccedil;&atilde;o. Int.
-Advogados(s): Eder Gledson Castanho (OAB 262359/SP)
 			</span>
 			
 		</td>
@@ -3517,41 +1491,23 @@ Advogados(s): Eder Gledson Castanho (OAB 262359/SP)
 
 	<tr class="fundoClaro containerMovimentacao" style="">
 		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			03/03/2023
+			08/05/2018
 		</td>
 		<td width="20" valign="top" aria-hidden="true">
-			
-				
-					
-					
-						
-					
-				
-
-				<a class="linkMovVincProc"
-					id="linkMovVincProc-67900373"
-					title="Visualizar documento em inteiro teor"
-					href="/cpopg/abrirDocumentoVinculadoMovimentacao.do?processo.codigo=67000FE100000&cdDocumento=67900373&nmRecursoAcessado=Determinada+a+Emenda+%C3%A0+Peti%C3%A7%C3%A3o+Inicial">
-					<img width="16" height="16" border="0" src="/cpopg/imagens/doc.png" />
-				</a>
 			
 		</td>
 		<td class="descricaoMovimentacao" style="vertical-align: top; padding-bottom: 5px">
 			
 			
 				
-					<a class="linkMovVincProc"
-						id="linkMovVincProc-2-67900373"
-						title="Visualizar documento em inteiro teor"
-						href="/cpopg/abrirDocumentoVinculadoMovimentacao.do?processo.codigo=67000FE100000&cdDocumento=67900373&nmRecursoAcessado=Determinada+a+Emenda+%C3%A0+Peti%C3%A7%C3%A3o+Inicial"> Determinada a Emenda à Petição Inicial
-					</a>
 				
+					Processo Digitalizado
 				
 			
 			
 			<br />
 			<span style="font-style: italic;">
-				Vistos, O art.5&ordm;, LXXIV, da Constitui&ccedil;&atilde;o Federal, disp&otilde;e &quot;o Estado prestar&aacute; assist&ecirc;ncia jur&iacute;dica integral e gratuita aos que comprovarem insufici&ecirc;ncia de recursos&quot;. Embora para a concess&atilde;o da gratuidade n&atilde;o se exija o estado de mis&eacute;ria absoluta, &eacute; necess&aacute;ria a comprova&ccedil;&atilde;o da impossibilidade de arcar com as custas e despesas do processo sem preju&iacute;zo de seu sustento pr&oacute;prio ou de sua fam&iacute;lia. A declara&ccedil;&atilde;o de pobreza, por sua vez, estabelece mera presun&ccedil;&atilde;o relativa da hipossufici&ecirc;ncia, que cede ante outros elementos que sirvam para indicar a capacidade financeira. No caso, h&aacute; elementos suficientes para afastar a presun&ccedil;&atilde;o, em especial: (i) natureza e objeto discutidos; (ii) contrata&ccedil;&atilde;o de advogado particular, dispensando a atua&ccedil;&atilde;o da Defensoria. Antes de indeferir o pedido, contudo, conv&eacute;m facultar ao interessado o direito de provar a impossibilidade de arcar, sem o seu pr&oacute;prio preju&iacute;zo ou de sua fam&iacute;lia, com as custas e despesas do processo. Assim, para aprecia&ccedil;&atilde;o do pedido de Justi&ccedil;a Gratuita, a parte requerente dever&aacute;, em 10 (dez) dias, apresentar, sob pena de indeferimento do benef&iacute;cio: a) O relat&oacute;rio contendo informa&ccedil;&otilde;es sobre relacionamentos com as institui&ccedil;&otilde;es financeiras, atrav&eacute;s do sistema registrato, obtido atrav&eacute;s do link:https://registrato.bcb.gov.br/registrato/login/. b) c&oacute;pia das &uacute;ltimas folhas da carteira do trabalho, ou comprovante de renda mensal, e de eventual c&ocirc;njuge; c) c&oacute;pia dos extratos banc&aacute;rios de contas de titularidade, e de eventual c&ocirc;njuge, dos &uacute;ltimos tr&ecirc;s meses; d) c&oacute;pia dos extratos de cart&atilde;o de cr&eacute;dito, dos &uacute;ltimos tr&ecirc;s meses; e) c&oacute;pia da &uacute;ltima declara&ccedil;&atilde;o do imposto de renda apresentada &agrave; Secretaria da Receita Federal. Ou, no mesmo prazo, dever&aacute; recolher as custas judiciais e despesas processuais, sob pena de extin&ccedil;&atilde;o, sem nova intima&ccedil;&atilde;o. Int.
+				
 			</span>
 			
 		</td>
@@ -3572,15 +1528,15 @@ Advogados(s): Eder Gledson Castanho (OAB 262359/SP)
 
 
 	
-	
 		
+	
 	
 
 
 
 	<tr class="fundoEscuro containerMovimentacao" style="">
 		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			03/03/2023
+			16/01/2018
 		</td>
 		<td width="20" valign="top" aria-hidden="true">
 			
@@ -3590,58 +1546,13 @@ Advogados(s): Eder Gledson Castanho (OAB 262359/SP)
 			
 				
 				
-					Conclusos para Decisão
+					Incidente Processual Instaurado
 				
 			
 			
 			<br />
 			<span style="font-style: italic;">
-				
-			</span>
-			
-		</td>
-	</tr>
-	
-
-
-				
-					
-
-
-
-
-
-
-
-
-
-
-	
-	
-		
-	
-
-
-
-	<tr class="fundoClaro containerMovimentacao" style="">
-		<td class="dataMovimentacao" width="120" style="vertical-align: top">
-			02/03/2023
-		</td>
-		<td width="20" valign="top" aria-hidden="true">
-			
-		</td>
-		<td class="descricaoMovimentacao" style="vertical-align: top; padding-bottom: 5px">
-			
-			
-				
-				
-					Distribuído Livremente (por Sorteio) (movimentação exclusiva do distribuidor)
-				
-			
-			
-			<br />
-			<span style="font-style: italic;">
-				
+				Processo principal: 0000235-93.2018.8.26.0047
 			</span>
 			
 		</td>
@@ -3806,58 +1717,10 @@ Advogados(s): Eder Gledson Castanho (OAB 262359/SP)
 					
 						<tr class="fundoClaro"> 
 							<td width="140"  style="text-align:left">
-								03/03/2023
+								31/10/2018
 							</td>
 							<td width="*">
 								Petições Diversas <br/>
-								
-							</td>
-						</tr>
-					
-				
-					
-						<tr class="fundoEscuro"> 
-							<td width="140"  style="text-align:left">
-								13/04/2023
-							</td>
-							<td width="*">
-								Emenda à Inicial <br/>
-								
-							</td>
-						</tr>
-					
-				
-					
-						<tr class="fundoClaro"> 
-							<td width="140"  style="text-align:left">
-								14/06/2023
-							</td>
-							<td width="*">
-								Pedido de Liminar/Antecipação de Tutela <br/>
-								
-							</td>
-						</tr>
-					
-				
-					
-						<tr class="fundoEscuro"> 
-							<td width="140"  style="text-align:left">
-								24/09/2023
-							</td>
-							<td width="*">
-								Petições Diversas <br/>
-								
-							</td>
-						</tr>
-					
-				
-					
-						<tr class="fundoClaro"> 
-							<td width="140"  style="text-align:left">
-								31/10/2023
-							</td>
-							<td width="*">
-								Manifestação Sobre a Contestação <br/>
 								
 							</td>
 						</tr>
@@ -4081,13 +1944,8 @@ Advogados(s): Eder Gledson Castanho (OAB 262359/SP)
 
 
     
-        
-            
-            
-                
-            
-        
     
+        
     
 
 <a name="audienciasPlaceHolder"></a>
@@ -4184,22 +2042,12 @@ Advogados(s): Eder Gledson Castanho (OAB 262359/SP)
 
 
 
-	<form action="/cpopg/show.do?processo.codigo=67000FE100000&processo.foro=223&processo.numero=1003101-38.2023.8.26.0223" id="popupSenha" style="display: none;" method="POST">
+	<form action="/cpopg/show.do?processo.codigo=1B00023PT1PQ8&gateway=true" id="popupSenha" style="display: none;" method="POST">
 		
 		<table role="document">
 			<tr>
 				<td colspan="2" style="padding-bottom:20px">Atendendo a resolução 121 do CNJ.</td>
 			</tr>
-			
-				<tr>
-					<td colspan="2" style="padding-bottom:20px">Se for advogado(a) nesse processo, é necessário<span id="identificacao"></span></td>
-					
-						
-						
-							<script language="javascript" type="text/JavaScript" src="https://esaj.tjsp.jus.br/sajcas/conteudoIdentificacao?script=1715608515796"></script>
-						
-					
-				</tr>
 			
 			<tr align="center">
 				<td align="left" colspan="2" style="padding-bottom:20px">
@@ -4336,5 +2184,5 @@ Advogados(s): Eder Gledson Castanho (OAB 262359/SP)
 
 
 
-<script type="text/javascript">window.NREUM||(NREUM={});NREUM.info={"errorBeacon":"bam.nr-data.net","licenseKey":"b61bdf610d","agent":"","beacon":"bam.nr-data.net","applicationTime":145,"applicationID":"258766562","transactionName":"MlZRN0QECkMAVERZDgscYBdEEBBDIFREWQ4LHFERGAYLXU9EX1YVFV9SDRgWBVpPVEBfTxZHQRZCFkpRAkNZXw9LYFsMQSQHRAhYXg==","queueTime":0}</script></body>
+<script type="text/javascript">window.NREUM||(NREUM={});NREUM.info={"errorBeacon":"bam.nr-data.net","licenseKey":"b61bdf610d","agent":"","beacon":"bam.nr-data.net","applicationTime":53,"applicationID":"258766562","transactionName":"MlZRN0QECkMAVERZDgscYBdEEBBDIFREWQ4LHFERGAYLXU9EX1YVFV9SDRgWBVpPVEBfTxZHQRZCFkpRAkNZXw9LYFsMQSQHRAhYXg==","queueTime":0}</script></body>
 </html>

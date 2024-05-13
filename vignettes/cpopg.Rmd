@@ -1,0 +1,201 @@
+---
+title: "Funções para o cpopg"
+output:
+  bookdown::html_document2:
+    base_format: rmarkdown::html_vignette
+    fig_caption: yes
+    toc: true
+    toc_depth: 2
+vignette: >
+  %\VignetteIndexEntry{cpopg}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+pkgdown:
+  as_is: true
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Introdução
+
+Essa vignette descreve o funcionamento das funções relacionadas à Consulta de Julgados de Primeiro Grau (CPOPG) do Tribunal de Justiça de São Paulo (TJSP). Iremos passar pelos seguintes pontos: (1) as funções principais do cpopg e (2) as funções secundárias do cpopg. A diferença entre uma função principal e uma secundária é que as funções principais mimetizam a trajetória do usuário quando consulta o CPOPG de forma manual, enquanto as funções secundárias extraem informações que não estão explícitas para um usuário que acesse manualmente o site do TJSP. Não devemos, entretanto, confundir as funções secundárias com funções auxiliares. Tanto as funções principais, como as secundárias são funções exportadas, enquanto as funções auxiliares são apenas as internas. 
+
+```{r setup}
+library(tjsp)
+```
+
+Há regras gerais que regem o funcionamento das funções principais e secundárias. 
+
+1. As funções relacionadas à Consulta de Julgados de Primeiro Grau (CPOPG) são, todas, nomeadas como `tjsp_cpopg_`. Há dois tipos de funções relacionados ao cpopg: as funções de download e as funções parse desses htmls. As funções de download são nomeadas como `tjsp_cpopg_baixar`, já as funções de parse são nomeadas como `tjsp_cpopg_ler`. A função principal de cada grupo não possui mais adjetivos no nome, já as funções secundárias ou auxiliares especificam o que elas estão baixando ou lendo.
+2. Todas as funções exportadas (as principais e as secundárias) realizam a iteração de funções auxiliares. A diferença entre a função exportada e a função auxiliar é que a auxiliar recebe como argumento um único elemento, enquanto a função exportável recebe um vetor que pode conter 1 ou mais elementos. A iteração é realizada por meio de funções do pacote [purrr](https://purrr.tidyverse.org/). A Tabela \@ref(tbl:funcoes-e-unitarias) representa a associação entre a função exportada com as funções auxiliares por trás.
+
+```{r funcoes-e-unitarias}
+cpopg_baixar <- tibble::tibble(
+  principal = "`tjsp_cpopg_baixar()`",
+  auxiliares = c("`tjsp_cpopg_baixar_processo()`", "`tjsp_cpopg_baixar_cd_processo()`"),
+  purrr = "`walk()`"
+)
+
+cpopg_ler <- tibble::tibble(
+  principal = "`tjsp_cpopg_ler()`",
+  auxiliares = c("`tjsp_cpopg_ler_unitario()`"),
+  purrr = "`map_dfr()`"
+)
+
+cpopg_baixar_outros <- tibble::tibble(
+  principal = "`tjsp_cpopg_baixar_outros()`",
+  auxiliares = c("`tjsp_cpopg_baixar_outros_unitario()`"),
+  purrr = "`walk()`"
+)
+
+cpopg_ler_outros <- tibble::tibble(
+  principal = "`tjsp_cpopg_ler_outros()`",
+  auxiliares = c("`tjsp_cpopg_ler_outros_unitario()`"),
+  purrr = "`map_dfr()`"
+)
+
+list(
+  cpopg_baixar,
+  cpopg_ler,
+  cpopg_baixar_outros,
+  cpopg_ler_outros
+) |> 
+  purrr::reduce(dplyr::bind_rows) |> 
+  knitr::kable(
+    caption = "Funções auxiliares por trás da função principal e o seu método de iteração",
+    col.names = c("Principal", "Auxiliares", "`purrr`")
+  ) |> 
+  kableExtra::collapse_rows()
+```
+
+# Funções principal
+
+Há duas funções principais: `tjsp_cpopg_baixar()` e `tjsp_cpopg_ler()`. Essas duas funções se complementam. Seu objetivo comum é baixar e extrair os dados do cpopg, seguindo a trajetória normal de um usuário que tente extrair os dados de forma manual. 
+
+## `tjsp_cpopg_baixar()`
+
+A função de download do cpopg recebe como argumento principal um vetor de números ou o códigos processos e baixa os htmls correspondente. Além disso, é possível fornecer o diretório em que se deseja salvar os arquivos html. 
+
+### Requisito
+
+É requisito para usar esta função estar autenticado no tjsp. Para isso, utilize a função `tjsp::tjsp_autenticar()`. 
+
+### Número ou código do processo?
+
+Qual é a diferença entre o número e o código do processo?
+
+Via de regra, sabemos o número do processo, que é a Numeração Única do Processo, criada pelo CNJ. Este número é composto de 20 dígitos, seguindo a estrutura definida na [Resolução Nº 65 de 16/12/2008
+](https://atos.cnj.jus.br/atos/detalhar/atos-normativos?documento=119), representada na Figura \@ref(fig:numeracao-unica)
+
+```{r numeracao-unica, echo = FALSE, out.width="90%", fig.cap="Estrutura da Numeração Única do CNJ"}
+knitr::include_graphics("cpopg/numeracao_unica.png")
+```
+
+Apesar deste número funcionar na maior parte dos casos, ele possui duas limitações:
+
+1. Em primeiro lugar, a consulta no CPOPG pelo número do processo não comporta múltiplas requisições. Isso força que a função `tjsp_cpopg_baixar()` seja iterada com um intervalo de 1 segundo entre cada requisição (`Sys.sleep(1)`), aumentando o tempo de requisição. 
+2. Em segundo lugar, há alguns processos em que um único número de processo retorna mais de um processo. É o caso de incidentes, cumprimentos de sentença e execuções penais. Um processo em que esse fenômeno acontece é: 0000235-93.2018.8.26.0047, vide a Figura \@ref(fig:mais-processo).
+
+```{r mais-processo, echo = FALSE, out.width="100%", fig.cap="Exemplo do processo 0000235-93.2018.8.26.0047, em que uma consulta com um único número de processo retorna mais de um resultado"}
+knitr::include_graphics("cpopg/mais_de_um_processo.png")
+```
+
+O código do processo é outra forma de se referir a um processo. Ele é composto de 13 dígitos, ao invés de 20, sendo que os 8 primeiros identificam o processo unicamente, enquanto os últimos 4 dígitos indicam se ele é o processo principal (0000) ou incidente (outros números). 
+
+O código resolve os dois problemas da numeração única.  
+
+1. Não há bloqueio para múltiplas requisições quando utilizamos o código de processo, dessa forma, não é necessário esperar 1 segundo entre cada requisição.
+2. O código do processo de fato é único, mesmo para os casos em que o número do processo retorna mais de um processo. No exemplo do processo 0000235-93.2018.8.26.0047, o código dos processos principal e incidente são:
+    - Principal: 1B00023PT0000
+    - Incidente: 1B00023PT1PQ8
+
+O problema do código do processo é encontrá-lo. Ele não está facilmente acessível. Além disso, não é possível realizar manualmente a consulta pelo código do processo.
+
+Em razão da diferença entre a consulta pelo número do processo ou pelo seu código, há duas funções auxiliares de consulta, ambas unitárias. A função `tjsp_cpopg_baixar_processo()` realiza a consulta do pelo número do processo, enquanto a função `tjsp_cpopg_baixar_cd_processo()` realiza a consulta pelo código do processo. 
+
+O argumento `processo` pode receber tanto o número do processo, como o seu código. A função avalia internamente se o que foi passado é um número ou um código e aplica a função auxiliar de acordo com a avaliação. A avaliação é feita pela contagem de dígitos, excluindo pontuações ("-" e "."). Se a contagem for igual a 20, então aplica-se a função `tjsp_cpopg_baixar_processo()`, seguido de um `Sys.sleep(1)`; se a contagem for igual a 13, então aplica-se a função `tjsp_cpopg_baixar_cd_processo()`. 
+
+### Return
+
+A função não retorna nada, mas ela baixa um arquivo em html. Este arquivo é nomeado como `{processo}_{cd_processo}`. Os arquivos sempre possuem ambos os identificadores do processo por duas razões:
+
+1. O arquivo não é nomeado apenas com o número do processo, pois ele não identifica unicamente todos os casos, sendo necessário o código do processo. 
+2. O arquivo não é nomeado apenas com o código do processo, pois a numeração única do processo é mais intuitiva e pode ser utilizada para pesquisas manuais, enquanto o código do processo não.
+
+## `tjsp_cpopg_ler()`
+
+A função de parse do cpopg recebe como argumento um arquivo em html representando a consulta no cpopg e retorna um data.frame contendo os metadados processuais. Há vários metadados a serem retornados, que podem ser divididos entre dois grupos: os metadados de capa e os outros metadados. A seguir, veremos cada um desses metadados. 
+
+### Capa
+
+As informações de capa são aquelas que se apresentam no cabeçalho do processo, conforme a Figura \@ref(fig:capa)
+
+```{r capa, echo = FALSE, out.width="100%", fig.cap="Metadados de capa do CPOPG"}
+knitr::include_graphics("cpopg/capa.png")
+```
+
+Há dois formatos possíveis para as informações de capa, o formato "Padronizado" e o formato "Completo". 
+
+- O formato "Padronizado" retorna uma tibble com 14 colunas, sendo: 
+    - processo
+    - cd_processo
+    - tipo_processo
+    - digital
+    - situacao
+    - classe
+    - assunto
+    - foro
+    - vara
+    - juiz
+    - dt_dist
+    - area
+    - controle
+    - valor_da_acao
+- O formato "Completo" retorna uma tibble sem pré-definir as colunas. As colunas retornadas serão  aquelas que aparecerem em cada processo.
+
+Há duas diferenças fundamentais entre as duas opções.
+
+- A primeira diferença está em quais colunas são retornadas. Há informações que não aparecem em todos os processos, tais como local_fisico, outros_assuntos, outros_numeros, unificado_ao, apensado_ao, valor_da_acao, processo_principal, recurso, entre outras. Estas colunas são excluídas do formato "Padronizado", mas aparecem no formato "Completo".
+- A segunda diferença está nas informações NA. Quando result = "Padronizado", como as colunas que aparecem são forçadas, então haverá colunas com resultado NA.Já quando result = "Completo", então haverá dois comportamentos distintos para a função. Via de regra, a coluna cujo valor for NA não aparecerá para aquele processo. Entretanto, quando a função é utilizada no contexto de um `purrr::map_dfr()`, então todas as colunas identificadas em todos os arquivos a serem parseados aparecerão para todos os processos, ainda que em alguns casos existam colunas com NA
+
+### Outros
+
+As informações relacionadas a "Outros" são todas as outras informações que estão na página de consulta do CPOPG, mas que estão fora da capa. São elas, em ordem de aparição:
+
+- Delegacia
+- Partes
+- Movimentações
+- Petições Diversas
+- Incidentes
+- Apensos
+- Audiências
+- Histórico de Classes
+
+A função permite escolher quais dessas funções serão retornadas no data.frame. É importante dizer que todas essas informações irão aparecer no data frame como list column, uma vez que o data frame retornado representa um processo por linha, mas todas essas informações do "outros" possuem outra unidade observacional, o que gera uma duplicação de linhas do ponto de vista do processo.
+
+# Funções secundárias
+
+Há 4 grupos de funções secundárias: as funções relacionadas a "outros", as funções relacionadas a "partes", as funções relacionadas a "tabela" e as funções relacionadas a "documentos". 
+
+## `tjsp_cpopg_*_outros()`
+
+Há dois tipos de funções do tipo 
+
+```{r opcoes-baixar, echo = FALSE, out.width="100%", fig.cap="Opções de consulta do CPOPG"}
+knitr::include_graphics("cpopg/opcoes_baixar.png")
+```
+
+### Baixar 'outros'
+
+### Ler 'outros'
+
+## `tjsp_cpopg_*_partes()`
+
+## `tjsp_cpopg_*_tabela()`
+
+## `tjsp_cpopg_*documentos()`
