@@ -55,7 +55,7 @@ tjsp_cpopg_baixar <- function(processos = NULL,  diretorio = ".") {
 #'
 tjsp_cpopg_baixar_processo <- function(processo, diretorio = "."){
 
-  url <- "https://esaj.tjsp.jus.br/cpopg/search.do?"
+  url <- "https://esaj.tjsp.jus.br/cpopg/search.do?gateway=true"
 
   cookies <- httr2::last_request()$options$cookiefile
 

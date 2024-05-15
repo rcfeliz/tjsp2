@@ -32,9 +32,9 @@ library(tjsp)
 Há regras gerais que regem o funcionamento das funções principais e secundárias. 
 
 1. As funções relacionadas à Consulta de Julgados de Primeiro Grau (CPOPG) são, todas, nomeadas como `tjsp_cpopg_`. Há dois tipos de funções relacionados ao cpopg: as funções de download e as funções parse desses htmls. As funções de download são nomeadas como `tjsp_cpopg_baixar`, já as funções de parse são nomeadas como `tjsp_cpopg_ler`. A função principal de cada grupo não possui mais adjetivos no nome, já as funções secundárias ou auxiliares especificam o que elas estão baixando ou lendo.
-2. Todas as funções exportadas (as principais e as secundárias) realizam a iteração de funções auxiliares. A diferença entre a função exportada e a função auxiliar é que a auxiliar recebe como argumento um único elemento, enquanto a função exportável recebe um vetor que pode conter 1 ou mais elementos. A iteração é realizada por meio de funções do pacote [purrr](https://purrr.tidyverse.org/). A Tabela \@ref(tbl:funcoes-e-unitarias) representa a associação entre a função exportada com as funções auxiliares por trás.
+2. Todas as funções exportadas (as principais e as secundárias) realizam a iteração de funções auxiliares. A diferença entre a função exportada e a função auxiliar é que a auxiliar recebe como argumento um único elemento, enquanto a função exportável recebe um vetor que pode conter 1 ou mais elementos. A iteração é realizada por meio de funções do pacote [purrr](https://purrr.tidyverse.org/). A Tabela \@ref(tab:funcoes-unitarias) representa a associação entre a função exportada com as funções auxiliares por trás.
 
-```{r funcoes-e-unitarias}
+```{r funcoes-unitarias, echo = FALSE}
 cpopg_baixar <- tibble::tibble(
   principal = "`tjsp_cpopg_baixar()`",
   auxiliares = c("`tjsp_cpopg_baixar_processo()`", "`tjsp_cpopg_baixar_cd_processo()`"),
@@ -73,7 +73,7 @@ list(
   kableExtra::collapse_rows()
 ```
 
-# Funções principal
+# Funções principais
 
 Há duas funções principais: `tjsp_cpopg_baixar()` e `tjsp_cpopg_ler()`. Essas duas funções se complementam. Seu objetivo comum é baixar e extrair os dados do cpopg, seguindo a trajetória normal de um usuário que tente extrair os dados de forma manual. 
 
@@ -90,7 +90,7 @@ A função de download do cpopg recebe como argumento principal um vetor de núm
 Qual é a diferença entre o número e o código do processo?
 
 Via de regra, sabemos o número do processo, que é a Numeração Única do Processo, criada pelo CNJ. Este número é composto de 20 dígitos, seguindo a estrutura definida na [Resolução Nº 65 de 16/12/2008
-](https://atos.cnj.jus.br/atos/detalhar/atos-normativos?documento=119), representada na Figura \@ref(fig:numeracao-unica)
+](https://atos.cnj.jus.br/atos/detalhar/atos-normativos?documento=119), representada na Figura \@ref(fig:numeracao-unica).
 
 ```{r numeracao-unica, echo = FALSE, out.width="90%", fig.cap="Estrutura da Numeração Única do CNJ"}
 knitr::include_graphics("cpopg/numeracao_unica.png")
@@ -184,18 +184,65 @@ Há 4 grupos de funções secundárias: as funções relacionadas a "outros", as
 
 ## `tjsp_cpopg_*_outros()`
 
-Há dois tipos de funções do tipo 
+As funções do tipo `outros` se referem à possibilidade de consultar processos por _outros_ parâmetros para além do número do processo. Estas opções estão disponíveis na página do CPOPG do TJSP conforme a Figura \@ref(fig:opcoes-baixar). 
 
 ```{r opcoes-baixar, echo = FALSE, out.width="100%", fig.cap="Opções de consulta do CPOPG"}
 knitr::include_graphics("cpopg/opcoes_baixar.png")
 ```
 
+Há dois tipos de funções do tipo `outros`: a função de baixar o html e a função de leitura deste html. Estas funções, em conjunto, levam à listagem de processos ligados aos parâmetros disponíveis. Para baixar os processos que são listados ao fim da leitura utilizando o `tjsp_cpopg_ler_outros()`, basta utilizar as [Funções principais]. 
+
 ### Baixar 'outros'
+
+A função `tjsp_cpopg_baixar_outros()` recebe três argumentos e, com base nisso, baixa os htmls correspondentes a esses argumentos. Dentre os três argumentos, há dois principais, que são o parâmetro a ser utilizado para a consulta e o valor a ser consultado. O terceiro argumento é simplesmente o diretório em que os htmls serão salvos. 
+
+Para o argumento `parametro`, há 7 opções possíveis:
+
+1. NMPARTE = Nome da parte
+1. DOCPARTE = Número do documento da parte
+1. NMADVOGADO = Nome do advogado
+1. NUMOAB = Número da OAB do advogado
+1. PRECATORIA = Número do precatório
+1. DOCELEG = Número do documento de delegacia
+1. NUMCDA = Número de Certidão de Dívida Ativa (CDA)
+
+O argumento `consultas` recebe um vetor atômico, com um ou mais elementos, contendo os valores relacionados ao `parametro` fornecido. Por exemplo, se o parâmetro escolhido for "NMPARTE", isto é, o nome da parte, o argumento de consultas pode receber um vetor contendo vários nomes. 
+
+```{r echo = TRUE, eval = FALSE}
+parametro <- "NMPARTE"
+consultas <- c("Maria do Carmo", "José da Silva", "Felipe Nóbrega")
+
+tjsp_cpopg_baixar_outros(parametro = parametro, consultas = consultas)
+```
+
+A função não retorna nada, mas ela gera arquivos em html. Cada arquivo em html gerado terá a seguinte estrutura de nomes: `{parametro}_{consulta}_{pagina}.html`. Os valores de `consultas` são tratados de forma a eliminar as acentuações e substituir os espaços (" ") por underline ("_"), mantendo o lower e upper case. No caso do exemplo acima, os arquivos gerados teriam os seguintes nomes:
+
+- NMPARTE_Maria_do_Carmo_01.html
+- NMPARTE_Jose_da_Silva_01.html
+- NMPARTE_Felipe_Nobrega_01.html
+
+Cada página do esaj contém no máximo 25 resultados. Assim, se uma consulta gerar mais de 25 resultados, então haverá mais de uma página para aquela consulta. Imaginemos, por exemplo, que o nome "Maria do Carmo" gerou 30 resultados. Então a consulta `tjsp_cpopg_baixar_outros(parametro = "NMPARTE", consultas = "Maria do Carmo")` iria gerar os seguintes arquivos em html:
+
+- NMPARTE_Maria_do_Carmo_01.html
+- NMPARTE_Maria_do_Carmo_02.html
 
 ### Ler 'outros'
 
+A função `tjsp_cpopg_ler_outros()` recebe o arquivo em html e retorna uma tibble contendo as seguintes colunas:
+
+- arquivo = Nome do arquivo html
+- parametro = Parâmetro utilizado para realizar a consulta
+- consulta = Valor da consulta
+- processo = Número do processo
+- cd_processo = Código do processo
+- classe = Classe
+- assunto = Assunto
+- dt_dist = Data de distribuição do processo
+
+## `tjsp_cpopg_*_tabela()` e `tjsp_cpopg_*documentos()`
+
+Está sendo desenvolvida.
+
 ## `tjsp_cpopg_*_partes()`
 
-## `tjsp_cpopg_*_tabela()`
-
-## `tjsp_cpopg_*documentos()`
+Está sendo desenvolvida.

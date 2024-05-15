@@ -25,30 +25,32 @@
 #' @details A estrutura do nome dos arquivos gerados é sempre ./{parametro}_{consulta}_{pagina}.html.
 #'
 tjsp_cpopg_baixar_outros <- function(consultas = NULL,
-                                     parametro = c("NMPARTE", "DOCPARTE", "NMADVOGADO", "NUMOAB", "PRECATORIA", "DOCDELEG", "NUMCDA"), diretorio = ".") {
+                                     parametro = c("NMPARTE", "DOCPARTE", "NMADVOGADO", "NUMOAB", "PRECATORIA", "DOCDELEG", "NUMCDA"),
+                                     diretorio = ".") {
   if(length(parametro) > 1) {
     parametros <- glue::glue_collapse(parametro, sep = ", ", last = " ou ")
     stop(glue::glue("Escolha um parâmetro apenas: {parametros}."))
   }
 
-  if(is.null(consulta)) {
+  if(is.null(consultas)) {
     stop("Informe os valores a serem consultados.")
   }
 
-  if(parametro %in% c("NMPARTE", "NMADVOGADO") & any(stringr::str_detect(consulta, "\\d"))) {
+  if(parametro %in% c("NMPARTE", "NMADVOGADO") & any(stringr::str_detect(consultas, "\\d"))) {
     txt <- glue::glue("O parâmetro {parametro} requer que sejam inseridos nomes na 'consulta', entretanto, foram identificados números. \nCertifique-se de que todos os valores da 'consulta' representam nomes.")
     warning(txt)
   }
 
   purrr::walk(consultas, ~{
-    tjsp_cpopg_baixar_outros_unitario(consulta = .x, parametro = parametro)
+    tjsp_cpopg_baixar_outros_unitario(consulta = .x, parametro = parametro, diretorio = diretorio)
 
     Sys.sleep(1)
   })
 }
 
 tjsp_cpopg_baixar_outros_unitario <- function(consulta = NULL,
-                                              parametro = c("NMPARTE", "DOCPARTE", "NMADVOGADO", "NUMOAB", "PRECATORIA", "DOCDELEG", "NUMCDA"), diretorio = ".") {
+                                              parametro = c("NMPARTE", "DOCPARTE", "NMADVOGADO", "NUMOAB", "PRECATORIA", "DOCDELEG", "NUMCDA"),
+                                              diretorio = ".") {
 
   if(parametro == "NUMOAB" | parametro == "DOCPARTE") {
     consulta <- stringr::str_remove_all(consulta, "\\W")
@@ -135,94 +137,78 @@ tjsp_cpopg_ler_outros <- function(arquivos) {
 }
 
 tjsp_cpopg_ler_outros_unitario <- function(arquivo) {
+
+  arquivo_infos <- basename(arquivo) |>
+    stringr::str_remove("\\.html") |>
+    stringr::str_split("_") |>
+    purrr::pluck(1)
+
   html <- arquivo |>
     xml2::read_html() |>
     xml2::xml_find_all("//ul[@class='unj-list-row']") |>
     xml2::xml_find_all("./li")
 
-  # Parse
-  processo <- html |>
-    xml2::xml_find_all(".//a[@class='linkProcesso']") |>
-    xml2::xml_text(trim = TRUE) |>
-    stringr::str_remove_all("\\s.+")
+  if(length(html) == 0) {
+    da <- tjsp_cpopg_ler_unitario(arquivo, formato = "Padronizado", outros = NULL) |>
+      dplyr::transmute(
+        arquivo = basename(arquivo),
+        parametro = arquivo_infos[1],
+        consulta = arquivo_infos[2],
+        processo,
+        cd_processo,
+        classe,
+        assunto,
+        dt_dist
+      )
+  } else {
+    processo <- html |>
+      xml2::xml_find_all(".//a[@class='linkProcesso']") |>
+      xml2::xml_text(trim = TRUE) |>
+      stringr::str_remove_all("[:punct:]")
 
-  cd_processo <- html |>
-    xml2::xml_find_all("./div") |>
-    xml2::xml_attr("id") |>
-    stringr::str_remove("divProcesso")
+    cd_processo <- html |>
+      xml2::xml_find_all("./div") |>
+      xml2::xml_attr("id") |>
+      stringr::str_remove("divProcesso")
 
-  tipo_participacao <- html |>
-    purrr::map(~{
-      .x |>
-        xml2::xml_child("/label[@class='unj-label tipoDeParticipacao']") |>
-        xml2::xml_text(trim = TRUE) |>
-        stringr::str_remove_all("\\:.*")
-    }) |>
-    unlist()
+    classe <- html |>
+      purrr::map(~{
+        .x |>
+          xml2::xml_child("/div[@class='classeProcesso']") |>
+          xml2::xml_text(trim = TRUE)
+      }) |>
+      unlist()
 
-  nome_parte <- html |>
-    purrr::map(~{
-      .x |>
-        xml2::xml_child("/div[@class='unj-base-alt nomeParte']") |>
-        xml2::xml_text(trim = TRUE) |>
-        stringr::str_remove_all("\\:.*")
-    }) |>
-    unlist()
+    assunto <- html |>
+      purrr::map(~{
+        .x |>
+          xml2::xml_child("/div[@class='assuntoPrincipalProcesso']") |>
+          xml2::xml_text(trim = TRUE)
+      }) |>
+      unlist()
 
-  classe <- html |>
-    purrr::map(~{
-      .x |>
-        xml2::xml_child("/div[@class='classeProcesso']") |>
-        xml2::xml_text(trim = TRUE)
-    }) |>
-    unlist()
+    dt_dist <- html |>
+      purrr::map(~{
+        .x |>
+          xml2::xml_child("/div[@class='dataLocalDistribuicaoProcesso']") |>
+          xml2::xml_text(trim = TRUE)
+      }) |>
+      unlist() |>
+      stringr::str_extract("\\S+") |>
+      lubridate::dmy()
 
-  assunto <- html |>
-    purrr::map(~{
-      .x |>
-        xml2::xml_child("/div[@class='assuntoPrincipalProcesso']") |>
-        xml2::xml_text(trim = TRUE)
-    }) |>
-    unlist()
+    # Return
+    da <- tibble::tibble(
+      arquivo = basename(arquivo),
+      parametro = arquivo_infos[1],
+      consulta = arquivo_infos[2],
+      processo,
+      cd_processo,
+      classe,
+      assunto,
+      dt_dist
+    )
+  }
 
-  dt_recebimento <- html |>
-    purrr::map(~{
-      .x |>
-        xml2::xml_child("/div[@class='dataLocalDistribuicaoProcesso']") |>
-        xml2::xml_text(trim = TRUE)
-    }) |>
-    unlist() |>
-    stringr::str_extract("\\S+") |>
-    lubridate::dmy()
-
-  local_recebimento <- html |>
-    purrr::map(~{
-      .x |>
-        xml2::xml_child("/div[@class='dataLocalDistribuicaoProcesso']") |>
-        xml2::xml_text(trim = TRUE)
-    }) |>
-    unlist() |>
-    stringr::str_extract("(?<=- ).+")
-
-  outros_numeros <- html |>
-    purrr::map(~{
-      .x |>
-        xml2::xml_child("/label[@class='unj-label']/following-sibling::div[1]") |>
-        xml2::xml_text()
-    }) |>
-    unlist()
-
-  # Return
-  tibble::tibble(
-    arquivo = basename(arquivo),
-    processo,
-    cd_processo,
-    tipo_participacao,
-    nome_parte,
-    classe,
-    assunto,
-    dt_recebimento,
-    local_recebimento,
-    outros_numeros,
-  )
+  return(da)
 }
