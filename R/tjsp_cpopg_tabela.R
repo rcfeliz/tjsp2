@@ -5,6 +5,8 @@ processo <- "00015089620188260180" # número em pg, mas está em sg
 cd_processo <- "500000TGT0000" # número em pg, mas está em sg
 cd_processo <- "RI007OWYY0000" # número em sg
 
+cd_processo <- "RI007Y5QU0000"
+
 tjsp_cpopg_baixar_tabela_processo <- function (processo = NULL, diretorio = ".") {
 
   processo <- abjutils::clean_cnj(processo)
@@ -178,13 +180,29 @@ tjsp_cposg_baixar_tabela_cd_processo <- function (cd_processo = NULL, diretorio 
   writeBin(resp_table$body, arquivo)
 }
 
-arquivo <- "apagar/TABELA_00015089620188260180_RI007OWYY0000.html"
-arquivo <- "apagar/TABELA_10031013820238260223_67000FE100000.html"
+arquivo <- "apagar/tabela/TABELA_00015089620188260180_RI007OWYY0000.html"
+arquivo <- "apagar/tabela/TABELA_10031013820238260223_67000FE100000.html"
+arquivo <- "apagar/tabela/TABELA_20529017120248260000_RI007Y5QU0000.html"
 
 tjsp_ler_tabela_docs_cd_processo <- function(arquivos = NULL, diretorio = "."){
 
-  doc <- arquivo |>
-    xml2::read_html() |>
+  html <- arquivo |>
+    xml2::read_html()
+
+  processo <- html |>
+    xml2::xml_find_first("//title") |>
+    xml2::xml_text()
+
+  cd_processo <- html |>
+    xml2::xml_find_all("//form/input[@id='cdProcessoPai']") |>
+    xml2::xml_attr("value")
+
+  # processo_pg           cd_processo_pg processo_sg          cd_processo_sg
+  # 00015089620188260180  NA             00015089620188260180 RI007OWYY0000
+  # 1003101382023826022   67000FE100000  NA                   NA
+  # NA                    NA             20529017120248260000 RI007Y5QU0000
+
+  doc <- html |>
     xml2::xml_text() |>
     stringr::str_extract("(?<=requestScope = )\\X+?(?=;)") |>
     jsonlite::fromJSON()
@@ -218,5 +236,5 @@ tjsp_ler_tabela_docs_cd_processo <- function(arquivos = NULL, diretorio = "."){
       # tibble::add_column(cd_processo_pg, .before =1) |>
       # tibble::add_column(cd_processo_sg, .after  = 1) |>
       # dplyr::mutate(instancia = ifelse(is.na(cd_processo_sg), 1, 2), .after = 2)
-
 }
+

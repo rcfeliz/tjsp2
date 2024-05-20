@@ -35,7 +35,7 @@ tjsp_cpopg_ler <- function(arquivos = NULL,
 
   }
 
-  purrr::map_dfr(arquivos, ~{tjsp_cpopg_ler_unitario(arquivo = .x, capa = capa, outros = outros)})
+  purrr::map_dfr(arquivos, ~{tjsp_cpopg_ler_unitario(arquivo = .x, formato = formato, outros = outros)})
 
 }
 
@@ -68,15 +68,14 @@ tjsp_cpopg_ler_unitario <- function(arquivo = NULL,
           stringr::str_replace_all(" ", "_")
 
     # usa as funções para extrair as outras informações
-    aux_outros <- purrr::map_dfr(outros, ~{
+    aux_outros <- purrr::map(outros, ~{
       fn_nm <- glue::glue("tjsp_cpopg_ler_{.x}")
       f <- get(fn_nm)
       aux_outros <- f(arquivo) |>
         tidyr::nest(.by = c(processo, cd_processo), .key = .x)
       return(aux_outros)
     }) |>
-      tidyr::fill(everything(), .direction = "up") |>
-      dplyr::slice(1)
+      purrr::reduce(dplyr::left_join, by = c("processo", "cd_processo"))
 
     # join
     da <- aux_capa |>
