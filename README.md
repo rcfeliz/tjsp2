@@ -1,5 +1,5 @@
 
-# Pacote tjsp
+# Pacote tjsp2
 
 ## Baixando e lendo decisões de primeiro e segundo grau.
 
@@ -27,7 +27,7 @@ Portanto, instale versão em desenvolvimento:
 
 ``` r
 install.packages("remotes")
-remotes::install_github("jjesusfilho/tjsp")
+remotes::install_github("rcfeliz/tjsp2")
 ```
 
 ## Utilização
