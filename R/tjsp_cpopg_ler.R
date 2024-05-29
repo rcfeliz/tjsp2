@@ -14,15 +14,8 @@
 #' Se quiser ler apenas os metadados principais, info deve ser NULL.
 #' @return tibble
 #'
-#' @examples
-#' \dontrun {
-#' 1003101-38.2023.8.26.0223 - Processo principal normal (67000FE100000)
-#' 0000235-93.2018.8.26.0047 - Processo principal de um incidente
-#' 0000235-93.2018.8.26.0047 (8000) - Incidente (1B00023PT1PQ8)
-#' 1014289-38.2022.8.26.0037 - Processo principal de um cumprimento de sentença (11000FHR30000)
-#' 0004995-42.2023.8.26.0037 - Cumprimento de sentença (11000GKOJ0000)
-#' 0006880-32.2020.8.26.0026 - Execução penal (0Q0001BEI0000)
-#' }
+#' @export
+
 tjsp_cpopg_ler <- function(arquivos = NULL,
                            formato = c("Padronizado", "Completo"),
                            outros = c("Tudo", "Delegacia", "Partes", "Movimentacoes", "Peticoes Diversas", "Incidentes", "Apensos", "Audiencias", "Historico Classes")) {
@@ -98,6 +91,12 @@ tjsp_cpopg_ler_capa_padronizado <- function(arquivo = NULL) {
     dplyr::count(value) |>
     dplyr::filter(n == max(n)) |>
     dplyr::pull(value)
+
+  if(length(cd_processo) > 1) {
+    cd_processo <- basename(arquivo) |>
+      stringr::str_remove("\\.html") |>
+      stringr::str_extract(".{13}$")
+  }
 
   tipo_processo <- html |>
     xml2::xml_find_first("//span[@class='unj-label']") |>
@@ -221,6 +220,12 @@ tjsp_cpopg_ler_capa_completo <- function(arquivo = NULL) {
     dplyr::filter(n == max(n)) |>
     dplyr::pull(value)
 
+  if(length(cd_processo) > 1) {
+    cd_processo <- basename(arquivo) |>
+      stringr::str_remove("\\.html") |>
+      stringr::str_extract(".{13}$")
+  }
+
   tipo_processo <- html |>
     xml2::xml_find_first("//span[@class='unj-label']") |>
     xml2::xml_text()
@@ -297,6 +302,12 @@ tjsp_cpopg_ler_partes <- function(arquivo = NULL) {
     dplyr::filter(n == max(n)) |>
     dplyr::pull(value)
 
+  if(length(cd_processo) > 1) {
+    cd_processo <- basename(arquivo) |>
+      stringr::str_remove("\\.html") |>
+      stringr::str_extract(".{13}$")
+  }
+
   tipo_processo <- html |>
     xml2::xml_find_first("//span[@class='unj-label']") |>
     xml2::xml_text()
@@ -361,6 +372,12 @@ tjsp_cpopg_ler_movimentacoes <- function (arquivo = NULL) {
     dplyr::count(value) |>
     dplyr::filter(n == max(n)) |>
     dplyr::pull(value)
+
+  if(length(cd_processo) > 1) {
+    cd_processo <- basename(arquivo) |>
+      stringr::str_remove("\\.html") |>
+      stringr::str_extract(".{13}$")
+  }
 
   tipo_processo <- html |>
     xml2::xml_find_first("//span[@class='unj-label']") |>
@@ -493,6 +510,12 @@ tjsp_cpopg_ler_delegacia <- function(arquivo = NULL) {
     dplyr::filter(n == max(n)) |>
     dplyr::pull(value)
 
+  if(length(cd_processo) > 1) {
+    cd_processo <- basename(arquivo) |>
+      stringr::str_remove("\\.html") |>
+      stringr::str_extract(".{13}$")
+  }
+
   tipo_processo <- html |>
     xml2::xml_find_first("//span[@class='unj-label']") |>
     xml2::xml_text()
@@ -555,6 +578,12 @@ tjsp_cpopg_ler_peticoes_diversas <- function(arquivo = NULL) {
     dplyr::filter(n == max(n)) |>
     dplyr::pull(value)
 
+  if(length(cd_processo) > 1) {
+    cd_processo <- basename(arquivo) |>
+      stringr::str_remove("\\.html") |>
+      stringr::str_extract(".{13}$")
+  }
+
   tipo_processo <- html |>
     xml2::xml_find_first("//span[@class='unj-label']") |>
     xml2::xml_text()
@@ -611,6 +640,12 @@ tjsp_cpopg_ler_incidentes <- function(arquivo = NULL) {
     dplyr::count(value) |>
     dplyr::filter(n == max(n)) |>
     dplyr::pull(value)
+
+  if(length(cd_processo) > 1) {
+    cd_processo <- basename(arquivo) |>
+      stringr::str_remove("\\.html") |>
+      stringr::str_extract(".{13}$")
+  }
 
   tipo_processo <- html |>
     xml2::xml_find_first("//span[@class='unj-label']") |>
@@ -692,6 +727,12 @@ tjsp_cpopg_ler_apensos <- function(arquivo = NULL) {
     dplyr::filter(n == max(n)) |>
     dplyr::pull(value)
 
+  if(length(cd_processo) > 1) {
+    cd_processo <- basename(arquivo) |>
+      stringr::str_remove("\\.html") |>
+      stringr::str_extract(".{13}$")
+  }
+
   tipo_processo <- html |>
     xml2::xml_find_first("//span[@class='unj-label']") |>
     xml2::xml_text()
@@ -772,6 +813,12 @@ tjsp_cpopg_ler_audiencias <- function(arquivo = NULL) {
     dplyr::count(value) |>
     dplyr::filter(n == max(n)) |>
     dplyr::pull(value)
+
+  if(length(cd_processo) > 1) {
+    cd_processo <- basename(arquivo) |>
+      stringr::str_remove("\\.html") |>
+      stringr::str_extract(".{13}$")
+  }
 
   tipo_processo <- html |>
     xml2::xml_find_first("//span[@class='unj-label']") |>
@@ -878,6 +925,12 @@ tjsp_cpopg_ler_historico_classes <- function(arquivo = NULL) {
     dplyr::count(value) |>
     dplyr::filter(n == max(n)) |>
     dplyr::pull(value)
+
+  if(length(cd_processo) > 1) {
+    cd_processo <- basename(arquivo) |>
+      stringr::str_remove("\\.html") |>
+      stringr::str_extract(".{13}$")
+  }
 
   tipo_processo <- html |>
     xml2::xml_find_first("//span[@class='unj-label']") |>
