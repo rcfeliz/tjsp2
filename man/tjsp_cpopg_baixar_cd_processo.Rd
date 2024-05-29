@@ -19,7 +19,7 @@ Baixar dados da consulta processual de primeiro grau com base no código do proc
 }
 \examples{
 \dontrun{
- tjsp_cpopg_baixar_cd_processo("67000FE100000") # exemplo típico
+tjsp_cpopg_baixar_cd_processo("67000FE100000") # exemplo típico
 tjsp_cpopg_baixar_cd_processo("1B00023PT1PQ8") # exemplo de incidente
 }
 

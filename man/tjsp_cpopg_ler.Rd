@@ -7,51 +7,27 @@
 tjsp_cpopg_ler(
   arquivos = NULL,
   formato = c("Padronizado", "Completo"),
-  info = c("Tudo", "Movimentações", "Partes", "Delegacia", "Petições Diversas",
-    "Incidentes", "Apensos", "Audiências", "Histórico Classes")
+  outros = c("Tudo", "Delegacia", "Partes", "Movimentacoes", "Peticoes Diversas",
+    "Incidentes", "Apensos", "Audiencias", "Historico Classes")
 )
 }
 \arguments{
 \item{arquivos}{Vetor contendo o caminho para os arquivos em html do cpopg.
 Pode receber também apenas a pasta em que estão os arquivos.}
 
-\item{info}{Informações a serem lidas do html. Por default, lê-se tudo ("Tudo").
+\item{outros}{Informações a serem lidas do html. Por default, lê-se tudo ("Tudo").
 Se quiser ler apenas os metadados principais, info deve ser NULL.}
 
 \item{capa}{Formato das colunas a serem retornadas. É escolhido 'Padronizado' por default.
-* 'Padronizado' retorna uma tibble com 14 colunas, sendo:
-processo, cd_processo, tipo_processo, digital, situacao, classe, assunto,
-foro, vara, juiz, dt_dist, area, controle, valor_da_acao.
-* 'Completo' retorna uma tibble sem pré-definir as colunas. As colunas
-retornadas serão  aquelas que aparecerem em cada processo.
-Há duas diferenças fundamentais entre as duas opções.
-* A primeira diferença está em quais colunas são retornadas.
-Há informações que não aparecem em todos os processos, tais como local_fisico,
-outros_assuntos, outros_numeros, unificado_ao, apensado_ao, valor_da_acao,
-processo_principal, recurso, entre outras. Estas colunas são excluídas do
-result = "Padronizado", mas aparecem no result = "Completo".
-* A segunda diferença está nas informações NA. Quando result = "Padronizado",
-como as colunas que aparecem são forçadas, então haverá colunas com resultado NA.
-Já quando result = "Completo", então haverá dois comportamentos distintos
-para a função. Via de regra, a coluna cujo valor for NA não aparecerá para
-aquele processo. Entretanto, quando a função é utilizada no contexto
-de um purrr::map_dfr(), então todas as colunas identificadas em todos os arquivos
-a serem parseados aparecerão para todos os processos, ainda que em alguns casos
-existam colunas com NA}
+* 'Padronizado' retorna uma tibble com 14 colunas, forçando algumas a
+aparecerem quando um processo não tiver e excluindo outras colunas
+que possam aparecer em um processo, mas não em outros
+* 'Completo' retorna uma tibble sem pré-definir as colunas, podendo trazer
+resultados distintos para cada processo.}
 }
 \value{
 tibble
 }
 \description{
 tjsp_cpopg_ler() parseia os dados de um html do cpopg.
-}
-\examples{
-\dontrun {
-1003101-38.2023.8.26.0223 - Processo principal normal (67000FE100000)
-0000235-93.2018.8.26.0047 - Processo principal de um incidente
-0000235-93.2018.8.26.0047 (8000) - Incidente (1B00023PT1PQ8)
-1014289-38.2022.8.26.0037 - Processo principal de um cumprimento de sentença (11000FHR30000)
-0004995-42.2023.8.26.0037 - Cumprimento de sentença (11000GKOJ0000)
-0006880-32.2020.8.26.0026 - Execução penal (0Q0001BEI0000)
-}
 }
