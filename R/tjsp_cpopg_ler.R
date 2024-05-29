@@ -84,19 +84,9 @@ tjsp_cpopg_ler_capa_padronizado <- function(arquivo = NULL) {
     xml2::read_html()
 
   cd_processo <- html |>
-    xml2::xml_find_all("//a[contains(@href,'processo.codigo')]") |>
-    xml2::xml_attr("href") |>
-    stringr::str_extract("(?<=processo.codigo=)\\w+") |>
-    tibble::as_tibble() |>
-    dplyr::count(value) |>
-    dplyr::filter(n == max(n)) |>
-    dplyr::pull(value)
-
-  if(length(cd_processo) > 1) {
-    cd_processo <- basename(arquivo) |>
-      stringr::str_remove("\\.html") |>
-      stringr::str_extract(".{13}$")
-  }
+    xml2::xml_find_first("//script") |>
+    xml2::xml_text() |>
+    stringr::str_extract("(?<=processo.codigo=)\\w+")
 
   tipo_processo <- html |>
     xml2::xml_find_first("//span[@class='unj-label']") |>
@@ -212,19 +202,9 @@ tjsp_cpopg_ler_capa_completo <- function(arquivo = NULL) {
     xml2::read_html()
 
   cd_processo <- html |>
-    xml2::xml_find_all("//a[contains(@href,'processo.codigo')]") |>
-    xml2::xml_attr("href") |>
-    stringr::str_extract("(?<=processo.codigo=)\\w+") |>
-    tibble::as_tibble() |>
-    dplyr::count(value) |>
-    dplyr::filter(n == max(n)) |>
-    dplyr::pull(value)
-
-  if(length(cd_processo) > 1) {
-    cd_processo <- basename(arquivo) |>
-      stringr::str_remove("\\.html") |>
-      stringr::str_extract(".{13}$")
-  }
+    xml2::xml_find_first("//script") |>
+    xml2::xml_text() |>
+    stringr::str_extract("(?<=processo.codigo=)\\w+")
 
   tipo_processo <- html |>
     xml2::xml_find_first("//span[@class='unj-label']") |>
@@ -294,19 +274,9 @@ tjsp_cpopg_ler_partes <- function(arquivo = NULL) {
     xml2::read_html()
 
   cd_processo <- html |>
-    xml2::xml_find_all("//a[contains(@href,'processo.codigo')]") |>
-    xml2::xml_attr("href") |>
-    stringr::str_extract("(?<=processo.codigo=)\\w+") |>
-    tibble::as_tibble() |>
-    dplyr::count(value) |>
-    dplyr::filter(n == max(n)) |>
-    dplyr::pull(value)
-
-  if(length(cd_processo) > 1) {
-    cd_processo <- basename(arquivo) |>
-      stringr::str_remove("\\.html") |>
-      stringr::str_extract(".{13}$")
-  }
+    xml2::xml_find_first("//script") |>
+    xml2::xml_text() |>
+    stringr::str_extract("(?<=processo.codigo=)\\w+")
 
   tipo_processo <- html |>
     xml2::xml_find_first("//span[@class='unj-label']") |>
@@ -363,21 +333,10 @@ tjsp_cpopg_ler_movimentacoes <- function (arquivo = NULL) {
   html <- arquivo |>
     xml2::read_html()
 
-  # IDs
   cd_processo <- html |>
-    xml2::xml_find_all("//a[contains(@href,'processo.codigo')]") |>
-    xml2::xml_attr("href") |>
-    stringr::str_extract("(?<=processo.codigo=)\\w+") |>
-    tibble::as_tibble() |>
-    dplyr::count(value) |>
-    dplyr::filter(n == max(n)) |>
-    dplyr::pull(value)
-
-  if(length(cd_processo) > 1) {
-    cd_processo <- basename(arquivo) |>
-      stringr::str_remove("\\.html") |>
-      stringr::str_extract(".{13}$")
-  }
+    xml2::xml_find_first("//script") |>
+    xml2::xml_text() |>
+    stringr::str_extract("(?<=processo.codigo=)\\w+")
 
   tipo_processo <- html |>
     xml2::xml_find_first("//span[@class='unj-label']") |>
@@ -502,19 +461,9 @@ tjsp_cpopg_ler_delegacia <- function(arquivo = NULL) {
     xml2::read_html()
 
   cd_processo <- html |>
-    xml2::xml_find_all("//a[contains(@href,'processo.codigo')]") |>
-    xml2::xml_attr("href") |>
-    stringr::str_extract("(?<=processo.codigo=)\\w+") |>
-    tibble::as_tibble() |>
-    dplyr::count(value) |>
-    dplyr::filter(n == max(n)) |>
-    dplyr::pull(value)
-
-  if(length(cd_processo) > 1) {
-    cd_processo <- basename(arquivo) |>
-      stringr::str_remove("\\.html") |>
-      stringr::str_extract(".{13}$")
-  }
+    xml2::xml_find_first("//script") |>
+    xml2::xml_text() |>
+    stringr::str_extract("(?<=processo.codigo=)\\w+")
 
   tipo_processo <- html |>
     xml2::xml_find_first("//span[@class='unj-label']") |>
@@ -570,19 +519,9 @@ tjsp_cpopg_ler_peticoes_diversas <- function(arquivo = NULL) {
     xml2::read_html()
 
   cd_processo <- html |>
-    xml2::xml_find_all("//a[contains(@href,'processo.codigo')]") |>
-    xml2::xml_attr("href") |>
-    stringr::str_extract("(?<=processo.codigo=)\\w+") |>
-    tibble::as_tibble() |>
-    dplyr::count(value) |>
-    dplyr::filter(n == max(n)) |>
-    dplyr::pull(value)
-
-  if(length(cd_processo) > 1) {
-    cd_processo <- basename(arquivo) |>
-      stringr::str_remove("\\.html") |>
-      stringr::str_extract(".{13}$")
-  }
+    xml2::xml_find_first("//script") |>
+    xml2::xml_text() |>
+    stringr::str_extract("(?<=processo.codigo=)\\w+")
 
   tipo_processo <- html |>
     xml2::xml_find_first("//span[@class='unj-label']") |>
@@ -719,19 +658,9 @@ tjsp_cpopg_ler_apensos <- function(arquivo = NULL) {
     xml2::read_html()
 
   cd_processo <- html |>
-    xml2::xml_find_all("//a[contains(@href,'processo.codigo')]") |>
-    xml2::xml_attr("href") |>
-    stringr::str_extract("(?<=processo.codigo=)\\w+") |>
-    tibble::as_tibble() |>
-    dplyr::count(value) |>
-    dplyr::filter(n == max(n)) |>
-    dplyr::pull(value)
-
-  if(length(cd_processo) > 1) {
-    cd_processo <- basename(arquivo) |>
-      stringr::str_remove("\\.html") |>
-      stringr::str_extract(".{13}$")
-  }
+    xml2::xml_find_first("//script") |>
+    xml2::xml_text() |>
+    stringr::str_extract("(?<=processo.codigo=)\\w+")
 
   tipo_processo <- html |>
     xml2::xml_find_first("//span[@class='unj-label']") |>
@@ -806,19 +735,9 @@ tjsp_cpopg_ler_audiencias <- function(arquivo = NULL) {
     xml2::read_html()
 
   cd_processo <- html |>
-    xml2::xml_find_all("//a[contains(@href,'processo.codigo')]") |>
-    xml2::xml_attr("href") |>
-    stringr::str_extract("(?<=processo.codigo=)\\w+") |>
-    tibble::as_tibble() |>
-    dplyr::count(value) |>
-    dplyr::filter(n == max(n)) |>
-    dplyr::pull(value)
-
-  if(length(cd_processo) > 1) {
-    cd_processo <- basename(arquivo) |>
-      stringr::str_remove("\\.html") |>
-      stringr::str_extract(".{13}$")
-  }
+    xml2::xml_find_first("//script") |>
+    xml2::xml_text() |>
+    stringr::str_extract("(?<=processo.codigo=)\\w+")
 
   tipo_processo <- html |>
     xml2::xml_find_first("//span[@class='unj-label']") |>
@@ -918,19 +837,9 @@ tjsp_cpopg_ler_historico_classes <- function(arquivo = NULL) {
     xml2::read_html()
 
   cd_processo <- html |>
-    xml2::xml_find_all("//a[contains(@href,'processo.codigo')]") |>
-    xml2::xml_attr("href") |>
-    stringr::str_extract("(?<=processo.codigo=)\\w+") |>
-    tibble::as_tibble() |>
-    dplyr::count(value) |>
-    dplyr::filter(n == max(n)) |>
-    dplyr::pull(value)
-
-  if(length(cd_processo) > 1) {
-    cd_processo <- basename(arquivo) |>
-      stringr::str_remove("\\.html") |>
-      stringr::str_extract(".{13}$")
-  }
+    xml2::xml_find_first("//script") |>
+    xml2::xml_text() |>
+    stringr::str_extract("(?<=processo.codigo=)\\w+")
 
   tipo_processo <- html |>
     xml2::xml_find_first("//span[@class='unj-label']") |>
@@ -983,4 +892,6 @@ tjsp_cpopg_ler_historico_classes <- function(arquivo = NULL) {
 
   return(da)
 }
+
+
 
