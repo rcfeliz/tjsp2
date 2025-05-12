@@ -16,26 +16,27 @@
 #' tjsp_cpopg_baixar(c("10091165420168260001", "WW0015T010000"))
 #' }
 #'
-tjsp_cpopg_baixar <- function(processos = NULL,  diretorio = ".") {
-
-  cookies <- httr2::last_request()$options$cookiefile
-
-  if(is.null(cookies)) {
-    stop("Faça login no esaj, por meio da função tjsp_autenticar()")
-  }
+tjsp_cpopg_baixar <- function(processos = NULL, diretorio = ".", cookies_path = NULL) {
 
   purrr::walk(processos, ~{
     processo <- .x |>
       stringr::str_remove_all("\\W")
 
     if(stringr::str_length(processo) == 20) {
-      tjsp_cpopg_baixar_processo(processo = .x, diretorio = diretorio)
-
+      tjsp_cpopg_baixar_processo(
+        processo = .x,
+        diretorio = diretorio,
+        cookies_path = cookies_path
+      )
       Sys.sleep(1)
     }
 
     if(stringr::str_length(processo) == 13) {
-      tjsp_cpopg_baixar_cd_processo(cd_processo = .x, diretorio = diretorio)
+      tjsp_cpopg_baixar_cd_processo(
+        cd_processo = .x,
+        diretorio = diretorio,
+        cookies_path = cookies_path
+      )
     }
   })
 }
@@ -53,11 +54,11 @@ tjsp_cpopg_baixar <- function(processos = NULL,  diretorio = ".") {
 #' tjsp_cpopg_baixar_processo("00002359320188260047") # exemplo em que um único processo gera uma lista de processos
 #'}
 #'
-tjsp_cpopg_baixar_processo <- function(processo, diretorio = "."){
+tjsp_cpopg_baixar_processo <- function(processo, diretorio = ".", cookies_path = NULL){
 
   url <- "https://esaj.tjsp.jus.br/cpopg/search.do?gateway=true"
 
-  cookies <- httr2::last_request()$options$cookiefile
+  cookies <- cookies(cookies_path)
 
   # Define request
   req <- httr2::request(url)  |>
@@ -141,12 +142,12 @@ tjsp_cpopg_baixar_processo <- function(processo, diretorio = "."){
 #' tjsp_cpopg_baixar_cd_processo("1B00023PT1PQ8") # exemplo de incidente
 #'}
 #'
-tjsp_cpopg_baixar_cd_processo <- function(cd_processo, diretorio = "."){
+tjsp_cpopg_baixar_cd_processo <- function(cd_processo, diretorio = ".", cookies_path = NULL){
   cd_processo <- stringr::str_extract(cd_processo,"\\w+")
 
   url <- glue::glue("https://esaj.tjsp.jus.br/cpopg/show.do?processo.codigo={cd_processo}&gateway=true")
 
-  cookies <- httr2::last_request()$options$cookiefile
+  cookies <- cookies(cookies_path)
 
   resp <- url |>
     httr2::request() |>

@@ -1,19 +1,19 @@
-processo <- "1003101-38.2023.8.26.0223" # em pg
-cd_processo <- "67000FE100000" # em pg
+# processo <- "1003101-38.2023.8.26.0223" # em pg
+# cd_processo <- "67000FE100000" # em pg
+#
+# processo <- "00015089620188260180" # número em pg, mas está em sg
+# cd_processo <- "500000TGT0000" # número em pg, mas está em sg
+# cd_processo <- "RI007OWYY0000" # número em sg
+#
+# cd_processo <- "RI007Y5QU0000"
 
-processo <- "00015089620188260180" # número em pg, mas está em sg
-cd_processo <- "500000TGT0000" # número em pg, mas está em sg
-cd_processo <- "RI007OWYY0000" # número em sg
-
-cd_processo <- "RI007Y5QU0000"
-
-tjsp_cpopg_baixar_tabela_processo <- function (processo = NULL, diretorio = ".") {
+tjsp_cpopg_baixar_tabela_processo <- function (processo = NULL, diretorio = ".", cookies_path = NULL) {
 
   processo <- abjutils::clean_cnj(processo)
 
   url <- "https://esaj.tjsp.jus.br/cpopg/search.do?gateway=true"
 
-  cookies <- httr2::last_request()$options$cookiefile
+  cookies <- cookies(cookies_path)
 
   # Define request
   req <- httr2::request(url)  |>

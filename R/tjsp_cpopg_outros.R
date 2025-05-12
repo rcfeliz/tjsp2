@@ -26,7 +26,8 @@
 #'
 tjsp_cpopg_baixar_outros <- function(consultas = NULL,
                                      parametro = c("NMPARTE", "DOCPARTE", "NMADVOGADO", "NUMOAB", "PRECATORIA", "DOCDELEG", "NUMCDA"),
-                                     diretorio = ".") {
+                                     diretorio = ".",
+                                     cookies_path = NULL) {
   if(length(parametro) > 1) {
     parametros <- glue::glue_collapse(parametro, sep = ", ", last = " ou ")
     stop(glue::glue("Escolha um parâmetro apenas: {parametros}."))
@@ -42,7 +43,13 @@ tjsp_cpopg_baixar_outros <- function(consultas = NULL,
   }
 
   purrr::walk(consultas, ~{
-    tjsp_cpopg_baixar_outros_unitario(consulta = .x, parametro = parametro, diretorio = diretorio)
+
+    tjsp_cpopg_baixar_outros_unitario(
+      consulta = .x,
+      parametro = parametro,
+      diretorio = diretorio
+      cookies_path = cookies_path
+    )
 
     Sys.sleep(1)
   })
@@ -50,13 +57,14 @@ tjsp_cpopg_baixar_outros <- function(consultas = NULL,
 
 tjsp_cpopg_baixar_outros_unitario <- function(consulta = NULL,
                                               parametro = c("NMPARTE", "DOCPARTE", "NMADVOGADO", "NUMOAB", "PRECATORIA", "DOCDELEG", "NUMCDA"),
-                                              diretorio = ".") {
+                                              diretorio = ".",
+                                              cookies_path = NULL) {
 
   if(parametro == "NUMOAB" | parametro == "DOCPARTE") {
     consulta <- stringr::str_remove_all(consulta, "\\W")
   }
 
-  cookies <- httr2::last_request()$options$cookiefile
+  cookies <- cookies(cookies_path)
 
   url_base <- "https://esaj.tjsp.jus.br/cpopg"
 
