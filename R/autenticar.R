@@ -17,7 +17,7 @@
 #'      criar variáveis de ambiente: "LOGINADV" e "PASSWORDADV", ou
 #'      chamar a função e aguardar o prompt para informar
 #'      login e password
-tjsp_autenticar <- function(login = NULL, password = NULL,
+esaj_autenticar <- function(login = NULL, password = NULL,
                              email_provider ="gmail",
                              outlook = "business",
                              wait_email = 5,
@@ -258,13 +258,25 @@ get_email_token <- function(email_provider, outlook, hora) {
 
 }
 
+#' Obter caminho do arquivo de cookies para uso em requisições
+#'
+#' Essa função retorna o caminho do arquivo de cookies a ser utilizado em requisições,
+#' seja pelo caminho fornecido pelo usuário ou, se não fornecido, pelo último cookie
+#' usado na sessão atual do pacote.
+#'
+#' @param cookies_path Caminho para o arquivo de cookies. Se `NULL`, tenta recuperar o cookie
+#' da última requisição HTTP feita pela sessão do `httr2`.
+#'
+#' @return Um `character` com o caminho do arquivo de cookies.
+#'
+#' @export
 cookies <- function(cookies_path = NULL) {
 
   if(is.null(cookies_path)) {
     cookies <- httr2::last_request()$options$cookiefile
 
     if(is.null(cookies)) {
-      stop("Faça login no esaj, por meio da função tjsp_autenticar()")
+      stop("Fa\u00E7a login no esaj, por meio da fun\u00E7\u00E3o tjsp_autenticar()")
     }
 
   } else {
