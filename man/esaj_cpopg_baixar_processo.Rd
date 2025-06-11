@@ -4,7 +4,11 @@
 \alias{esaj_cpopg_baixar_processo}
 \title{Baixar dados da consulta processual de primeiro grau com base na numeração única do processo}
 \usage{
-esaj_cpopg_baixar_processo(processo, diretorio = ".", cookies_path = NULL)
+esaj_cpopg_baixar_processo(
+  processo = NULL,
+  diretorio = ".",
+  cookies_path = NULL
+)
 }
 \arguments{
 \item{processo}{Númeração Única do processo (CNJ)}

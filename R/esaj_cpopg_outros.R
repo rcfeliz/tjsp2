@@ -32,6 +32,10 @@ esaj_cpopg_baixar_outros <- function(consultas = NULL,
                                      diretorio = ".",
                                      cookies_path = NULL) {
 
+  if (!dir_exists(diretorio)) {
+    fs::dir_create(diretorio)
+  }
+
   cookies <- cookies(cookies_path)
 
   if(length(parametro) > 1) {

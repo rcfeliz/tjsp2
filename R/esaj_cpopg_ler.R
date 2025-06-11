@@ -448,7 +448,11 @@ esaj_cpopg_ler_movimentacoes <- function (arquivo = NULL) {
       sep = "\n\\s+", extra = "merge",
       fill = "right"
     ) |>
-    dplyr::distinct()
+    dplyr::distinct() |>
+    dplyr::mutate(
+      id_mov = dplyr::n() - dplyr::row_number() + 1
+    ) |>
+    dplyr::relocate(id_mov, .after = cd_processo)
 
   return(da)
 

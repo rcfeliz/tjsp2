@@ -26,6 +26,10 @@
 #'
 esaj_cpopg_baixar <- function(processos = NULL, diretorio = ".", cookies_path = NULL) {
 
+  if (!fs::dir_exists(diretorio)) {
+    fs::dir_create(diretorio)
+  }
+
   purrr::walk(processos, ~{
     processo <- .x |>
       stringr::str_remove_all("\\W")
@@ -66,7 +70,7 @@ esaj_cpopg_baixar <- function(processos = NULL, diretorio = ".", cookies_path = 
 #' esaj_cpopg_baixar_processo("00002359320188260047")
 #'}
 #'
-esaj_cpopg_baixar_processo <- function(processo, diretorio = ".", cookies_path = NULL){
+esaj_cpopg_baixar_processo <- function(processo = NULL, diretorio = ".", cookies_path = NULL){
 
   url <- "https://esaj.tjsp.jus.br/cpopg/search.do?gateway=true"
 
@@ -159,7 +163,8 @@ esaj_cpopg_baixar_processo <- function(processo, diretorio = ".", cookies_path =
 #'}
 #'
 esaj_cpopg_baixar_cd_processo <- function(cd_processo, diretorio = ".", cookies_path = NULL){
-  cd_processo <- stringr::str_extract(cd_processo,"\\w+")
+
+  cd_processo <- stringr::str_extract(cd_processo, "\\w+")
 
   url <- glue::glue("https://esaj.tjsp.jus.br/cpopg/show.do?processo.codigo={cd_processo}&gateway=true")
 
