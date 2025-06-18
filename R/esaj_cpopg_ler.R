@@ -27,7 +27,13 @@ esaj_cpopg_ler <- function(arquivos = NULL,
 
   }
 
-  purrr::map_dfr(arquivos, ~{esaj_cpopg_ler_unitario(arquivo = .x, formato = formato, outros = outros)})
+  purrr::map_dfr(arquivos, ~{
+    esaj_cpopg_ler_unitario(
+      arquivo = .x,
+      formato = formato,
+      outros = outros
+    )
+  })
 
 }
 
