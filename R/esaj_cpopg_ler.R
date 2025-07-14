@@ -305,32 +305,118 @@ esaj_cpopg_ler_partes <- function(arquivo = NULL) {
       stringr::str_extract(".{20}")
   }
 
-  if(xml2::xml_find_first(html,"boolean(//table[@id='tableTodasPartes'])")) {
+  mais <- html |>
+    xml2::xml_find_first("boolean(//table[@id='tableTodasPartes'])")
 
-    da <- html |>
+  if (mais) {
+    tabela <- html |>
       xml2::xml_find_first("//table[@id='tableTodasPartes']") |>
-      rvest::html_table() |>
-      setNames(c("tipo_parte","parte")) |>
-      tidyr::separate(parte,c("parte","representante"),
-                      sep = "(?<=\\S)\\s{10,}", extra = "merge",
-                      fill = "right") |>
-      tibble::add_column(processo = processo, .before = 1) |>
-      tibble::add_column(cd_processo = cd_processo, .after = 1)
-
+      rvest::html_table()
   } else {
-
-    da <- html |>
+    tabela <- html |>
       xml2::xml_find_first("//table[@id='tablePartesPrincipais']") |>
-      rvest::html_table() |>
-      setNames(c("tipo_parte","parte")) |>
-      tidyr::separate(parte,c("parte","representante"),
-                      sep = "(?<=\\S)\\s{10,}", extra = "merge",
-                      fill = "right") |>
-      tibble::add_column(processo = processo, .before = 1) |>
-      tibble::add_column(cd_processo = cd_processo, .after = 1)
+      rvest::html_table()
   }
 
-  return(da)
+  if (nrow(tabela) == 0) {
+    da_partes <- tibble::tibble(
+      id_parte = NA_integer_,
+      nome = NA_character_,
+      tipo = NA_character_,
+      tipo_parte = NA_character_,
+      tipo_representante = NA_character_,
+      obs = NA_character_
+    )
+  } else {
+    todos <- tabela |>
+      setNames(c("tipo_parte","parte")) |>
+      tidyr::separate(parte,c("nome", "representante"),sep = "(?<=\\S)\\s{10,}", extra = "merge") |>
+      dplyr::mutate(
+        id_parte = dplyr::row_number(),
+        obs = stringr::str_detect(nome, "\\(Histórico da parte\\)") &
+          stringr::str_detect(representante, "Réu Preso"),
+        representante = representante |>
+          stringr::str_replace_all("&nbsp|\\:", "   ") |>
+          stringr::str_remove_all("[:punct:]") |>
+          stringr::str_split("\\s{5,}")
+      ) |>
+      dplyr::relocate(id_parte, .before = 1) |>
+      tidyr::unnest(representante) |>
+      dplyr::group_by(id_parte) |>
+      dplyr::mutate(
+        id_interno = dplyr::row_number(),
+        obs = dplyr::case_when(
+          obs & id_interno == 1 ~ representante
+        ),
+        representante = dplyr::case_when(
+          representante == obs ~ NA_character_,
+          TRUE ~ representante
+        ),
+        excluir = !is.na(obs) & id_interno == 1
+      ) |>
+      tidyr::fill(obs, .direction = "down") |>
+      dplyr::filter(!excluir) |>
+      dplyr::mutate(
+        id_interno = dplyr::row_number()
+      ) |>
+      dplyr::ungroup() |>
+      dplyr::mutate(
+        tipo_representante = dplyr::case_when(
+          id_interno %% 2 == 1 ~ representante
+        ),
+        representante = dplyr::case_when(
+          representante == tipo_representante ~ NA_character_,
+          TRUE ~ representante
+        ),
+        id_interno = ceiling(id_interno / 2),
+        excluir = is.na(representante) & !is.na(tipo_representante)
+      ) |>
+      dplyr::group_by(id_parte, id_interno) |>
+      tidyr::fill(tipo_representante, .direction = "down") |>
+      dplyr::ungroup() |>
+      dplyr::filter(!excluir) |>
+      dplyr::select(
+        id_parte,
+        nome,
+        tipo_parte,
+        obs,
+        tipo_representante,
+        representante
+      )
+
+    partes <- todos |>
+      dplyr::transmute(
+        id_parte,
+        nome,
+        tipo = "Parte",
+        tipo_parte,
+        tipo_representante = NA_character_,
+        obs
+      ) |>
+      dplyr::distinct()
+
+    representantes <- todos |>
+      dplyr::filter(!is.na(representante)) |>
+      dplyr::transmute(
+        id_parte,
+        nome = representante,
+        tipo = "Representante",
+        tipo_parte = NA_character_,
+        tipo_representante,
+        obs = NA_character_
+      ) |>
+      dplyr::distinct()
+
+    da_partes <- partes |>
+      dplyr::bind_rows(representantes) |>
+      dplyr::arrange(processo, cd_processo, id_parte)
+  }
+
+  tibble::tibble(
+    processo,
+    cd_processo,
+    da_partes
+  )
 }
 
 esaj_cpopg_ler_movimentacoes <- function (arquivo = NULL) {

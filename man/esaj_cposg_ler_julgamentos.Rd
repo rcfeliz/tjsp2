@@ -14,7 +14,7 @@ Um tibble com as colunas:
 \describe{
   \item{processo}{Número do processo, somente dígitos.}
   \item{cd_processo}{Código interno do processo.}
-  \item{dt_julgamento}{Data do julgamento (string).}
+  \item{dt_julgamento}{Data do julgamento.}
   \item{situacao_julgamento}{Situação do julgamento.}
   \item{decisao}{Decisão do julgamento.}
 }

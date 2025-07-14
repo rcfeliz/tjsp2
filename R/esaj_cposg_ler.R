@@ -1,6 +1,16 @@
+#' Ler dados da capa do processo no CPOSG
+#'
+#' Extrai informações básicas da capa do processo judicial a partir do arquivo HTML.
+#'
+#' @param arquivos Caminho para o arquivo HTML ou objeto compatível com `xml2::read_html()`.
+#' @param outros Parse das outras seções do HTML. Se escolher "Tudo" irá baixar tudo.
+#' As opções são:
+#' Apensos, Numeros de 1a instancia, Partes, Movimentacoes, Subprocessos e Recursos, Composicao do Julgamento, Julgamentos
+#' @return Umatibble
+#' @export
 esaj_cposg_ler <- function(
     arquivos = NULL,
-    outros = c("Tudo", "Apensos", "Números de 1a instância", "Partes", "Movimentacoes", "Subprocessos e Recursos", "Composição do Julgamento", "Julgamentos")
+    outros = c("Tudo", "Apensos", "Numeros de 1a instancia", "Partes", "Movimentacoes", "Subprocessos e Recursos", "Composicao do Julgamento", "Julgamentos")
   ) {
 
   if(is.null(arquivos)){
@@ -16,13 +26,22 @@ esaj_cposg_ler <- function(
       arquivo = .x,
       outros = outros
     )
-  })
+  }, .progress = TRUE)
 
 }
 
+#' Ler dados da capa do processo no CPOSG
+#'
+#' Extrai informações básicas da capa do processo judicial a partir do arquivo HTML.
+#'
+#' @param arquivo Caminho para o arquivo HTML ou objeto compatível com `xml2::read_html()`.
+#' @param outros Parse das outras seções do HTML. Se escolher "Tudo" irá baixar tudo.
+#' As opções são:
+#' Apensos, Numeros de 1a instancia, Partes, Movimentacoes, Subprocessos e Recursos, Composicao do Julgamento, Julgamentos
+#' @return Uma tibble
 esaj_cposg_ler_unitario <- function(
     arquivo = NULL,
-    outros = c("Tudo", "Apensos", "Números de 1a instância", "Partes", "Movimentacoes", "Subprocessos e Recursos", "Composição do Julgamento", "Julgamentos")
+    outros = c("Tudo", "Apensos", "Numeros de 1a instancia", "Partes", "Movimentacoes", "Subprocessos e Recursos", "Composicao do Julgamento", "Julgamentos")
 ) {
 
   aux_capa <- esaj_cposg_ler_capa(arquivo)
@@ -32,13 +51,13 @@ esaj_cposg_ler_unitario <- function(
     # extrai demais informacoes
   } else {
     # ajusta o parametro 'info'
-    if(any(outros == "Tudo")) outros <- c("Apensos", "Números de 1a instância", "Partes", "Movimentacoes", "Subprocessos e Recursos", "Composição do Julgamento", "Julgamentos")
+    if(any(outros == "Tudo")) outros <- c("Apensos", "Numeros de 1a instancia", "Partes", "Movimentacoes", "Subprocessos e Recursos", "Composicao do Julgamento", "Julgamentos")
 
     # fix outros
     depara <- c(
-      "Números de 1a instância" = "Numeros PG",
+      "Numeros de 1a instancia" = "Numeros PG",
       "Subprocessos e Recursos" = "Subprocessos Recursos",
-      "Composição do Julgamento" = "Composição Julgamento"
+      "Composicao do Julgamento" = "Composicao Julgamento"
     )
 
     outros <- purrr::map_chr(outros, ~{
@@ -93,22 +112,31 @@ esaj_cposg_ler_capa <- function(arquivo = NULL) {
   html <- arquivo |>
     xml2::read_html()
 
-  processo <- html |>
-    xml2::xml_find_first("//span[@id='numeroProcesso']") |>
-    xml2::xml_text(trim = TRUE) |>
-    stringr::str_remove_all("\\D+")
+  processo <- esaj_cposg_get_processo(arquivo)
 
   cd_processo <- html |>
     xml2::xml_find_first("//input[@name='cdProcesso']") |>
     xml2::xml_attr("value")
 
   situacao <- html |>
-    xml2::xml_find_first("//span[@id='situacaoProcesso']") |>
-    xml2::xml_text(trim = TRUE)
+    xml2::xml_find_first("//div[@class='col-md-13']") |>
+    xml2::xml_find_first(".//span[contains(@class, 'unj-tag')]") |>
+    xml2::xml_text()
 
   classe <- html |>
     xml2::xml_find_first("//div[@id='classeProcesso']") |>
     xml2::xml_text(trim = TRUE)
+
+  if (is.na(classe)) {
+
+    classe <- html |>
+      xml2::xml_find_first("//div[@class='col-md-13']") |>
+      xml2::xml_find_first(".//span[contains(@class, 'unj-larger')]") |>
+      xml2::xml_text() |>
+      stringr::str_remove_all("\\d+|[:punct:]") |>
+      stringr::str_squish()
+
+  }
 
   assunto <- html |>
     xml2::xml_find_first("//div[@id='assuntoProcesso']") |>
@@ -166,10 +194,7 @@ esaj_cposg_ler_apensos <- function(arquivo = NULL) {
   html <- arquivo |>
     xml2::read_html()
 
-  processo <- html |>
-    xml2::xml_find_first("//span[@id='numeroProcesso']") |>
-    xml2::xml_text(trim = TRUE) |>
-    stringr::str_remove_all("\\D+")
+  processo <- esaj_cposg_get_processo(arquivo)
 
   cd_processo <- html |>
     xml2::xml_find_first("//input[@name='cdProcesso']") |>
@@ -179,15 +204,18 @@ esaj_cposg_ler_apensos <- function(arquivo = NULL) {
     xml2::xml_find_first("boolean(//td[@id='dadosApensosNaoDisponiveis'])")
 
   if (tem_apensos) {
+    # 00041332420188260077
     message(glue::glue("Rever apensos para {processo}"))
   } else {
     tibble::tibble(
       processo,
       cd_processo,
-      apensos = NA_character_
+      numero = NA_character_,
+      classe = NA_character_,
+      apensamento = NA_character_,
+      motivo = NA_character_
     )
   }
-
 }
 
 #' Ler tabela de números de primeira instância no CPOSG
@@ -210,10 +238,7 @@ esaj_cposg_ler_numeros_pg <- function(arquivo = NULL) {
   html <- arquivo |>
     xml2::read_html()
 
-  processo <- html |>
-    xml2::xml_find_first("//span[@id='numeroProcesso']") |>
-    xml2::xml_text(trim = TRUE) |>
-    stringr::str_remove_all("\\D+")
+  processo <- esaj_cposg_get_processo(arquivo)
 
   cd_processo <- html |>
     xml2::xml_find_first("//input[@name='cdProcesso']") |>
@@ -221,7 +246,7 @@ esaj_cposg_ler_numeros_pg <- function(arquivo = NULL) {
 
   tabela <- html |>
     xml2::xml_find_first(
-      "//h2[@class='subtitle' and normalize-space(text()) = 'Números de 1ª Instância']/parent::div/following-sibling::table[2]"
+      "//h2[@class='subtitle' and normalize-space(text()) = 'N\u00FAmeros de 1\u00AA Inst\u00E2ncia']/parent::div/following-sibling::table[2]"
     )
 
   processos_pg <- tabela |>
@@ -278,17 +303,18 @@ esaj_cposg_ler_numeros_pg <- function(arquivo = NULL) {
 #' }
 esaj_cposg_ler_partes <- function(arquivo = NULL)  {
 
+  # 1506158-21.2025.8.26.0228
+  # 0004132-17.2016.8.26.0495
+
   html <- arquivo |>
     xml2::read_html()
 
-  processo <- html |>
-    xml2::xml_find_first("//span[@id='numeroProcesso']") |>
-    xml2::xml_text(trim = TRUE) |>
-    stringr::str_remove_all("\\D+")
+  processo <- esaj_cposg_get_processo(arquivo)
 
   cd_processo <- html |>
-    xml2::xml_find_first("//input[@name='cdProcesso']") |>
-    xml2::xml_attr("value")
+    xml2::xml_find_first("//script") |>
+    xml2::xml_text() |>
+    stringr::str_extract("(?<=processo\\.codigo=).{13}")
 
   mais <- html |>
     xml2::xml_find_first("boolean(//table[@id='tableTodasPartes'])")
@@ -301,57 +327,61 @@ esaj_cposg_ler_partes <- function(arquivo = NULL)  {
       xml2::xml_find_first("//table[@id='tablePartesPrincipais']")
   }
 
-  partes <- tabela |>
-    xml2::xml_find_all(".//tr[contains(@class, 'fundo')]")
-
-  id <- 1
-  da_partes <- tibble::tibble()
-  for(.x in partes) {
-
-    participacao <- .x |>
-      xml2::xml_find_first("./td[@class='label']") |>
-      xml2::xml_text(trim = TRUE) |>
-      stringr::str_remove_all("[:punct:]")
-
-    td_nomes <- .x |>
-      xml2::xml_find_first("./td[@class='nomeParteEAdvogado']")
-
-    nomeParteEAdvogado <- xml2::xml_text(td_nomes, trim = TRUE)
-
-    parte_unica <- !xml2::xml_find_first(td_nomes, "boolean(./span)")
-
-    if (parte_unica) {
-      # cenário 1: só tem parte principal, sem representante
-
-      nome <- stringr::str_squish(nomeParteEAdvogado)
-      tipo_parte <- "Principal"
-
-    } else {
-      # cenário 2: parte + representante
-      lista <- nomeParteEAdvogado |>
+  da_parte <- tabela |>
+    rvest::html_table() |>
+    setNames(c("tipo_parte","parte")) |>
+    tidyr::separate(parte,c("nome", "representante"),sep = "(?<=\\S)\\s{10,}", extra = "merge") |>
+    dplyr::mutate(
+      id_parte = dplyr::row_number(),
+      obs = stringr::str_detect(nome, "\\(Histórico da parte\\)"),
+      representante = representante |>
         stringr::str_replace_all("&nbsp|\\:", "   ") |>
         stringr::str_remove_all("[:punct:]") |>
-        stringr::str_split("\\s{3,}") |>
-        purrr::pluck(1)
-
-      nome <- lista[c(TRUE, FALSE)] # pega 1, 3, 5, 7 ... nomes
-      tipo_parte <- c("Principal", lista[c(FALSE, TRUE)]) # pega 2, 4, 6 ... tipos
-
-    }
-
-    da <- tibble::tibble(
-      id_parte = id,
-      participacao,
+        stringr::str_split("\\s{5,}")
+    ) |>
+    dplyr::relocate(id_parte, .before = 1) |>
+    tidyr::unnest(representante) |>
+    dplyr::group_by(id_parte) |>
+    dplyr::mutate(
+      id_interno = dplyr::row_number(),
+      obs = dplyr::case_when(
+        obs & id_interno == 1 ~ representante
+      ),
+      representante = dplyr::case_when(
+        representante == obs ~ NA_character_,
+        TRUE ~ representante
+      ),
+      excluir = !is.na(obs) & id_interno == 1
+    ) |>
+    tidyr::fill(obs, .direction = "down") |>
+    dplyr::filter(!excluir) |>
+    dplyr::mutate(
+      id_interno = dplyr::row_number()
+    ) |>
+    dplyr::ungroup() |>
+    dplyr::mutate(
+      tipo_representante = dplyr::case_when(
+        id_interno %% 2 == 1 ~ representante
+      ),
+      representante = dplyr::case_when(
+        representante == tipo_representante ~ NA_character_,
+        TRUE ~ representante
+      ),
+      id_interno = ceiling(id_interno / 2),
+      excluir = is.na(representante) & !is.na(tipo_representante)
+    ) |>
+    dplyr::group_by(id_parte, id_interno) |>
+    tidyr::fill(tipo_representante, .direction = "down") |>
+    dplyr::ungroup() |>
+    dplyr::filter(!excluir) |>
+    dplyr::select(
+      id_parte,
+      tipo_parte,
       nome,
-      tipo_parte
+      obs,
+      tipo_representante,
+      representante
     )
-
-    da_partes <- da_partes |>
-      dplyr::bind_rows(da)
-
-    id <- id + 1
-
-  }
 
   tibble::tibble(
     processo,
@@ -383,10 +413,7 @@ esaj_cposg_ler_movimentacoes <- function(arquivo = NULL)  {
   html <- arquivo |>
     xml2::read_html()
 
-  processo <- html |>
-    xml2::xml_find_first("//span[@id='numeroProcesso']") |>
-    xml2::xml_text(trim = TRUE) |>
-    stringr::str_remove_all("\\D+")
+  processo <- esaj_cposg_get_processo(arquivo)
 
   cd_processo <- html |>
     xml2::xml_find_first("//input[@name='cdProcesso']") |>
@@ -399,8 +426,7 @@ esaj_cposg_ler_movimentacoes <- function(arquivo = NULL)  {
 
   dt_mov <- movs |>
     xml2::xml_find_first("./td[contains(@class,'dataMovimentacao')]") |>
-    xml2::xml_text(trim = TRUE) |>
-    lubridate::dmy()
+    xml2::xml_text(trim = TRUE)
 
   anexo <- movs |>
     xml2::xml_find_first("./td[contains(@class,'descricaoMovimentacao')]/a") |>
@@ -476,6 +502,8 @@ esaj_cposg_ler_movimentacoes <- function(arquivo = NULL)  {
       id_mov = dplyr::n() - dplyr::row_number() + 1
     ) |>
     dplyr::relocate(id_mov, .after = cd_processo)
+
+  return(da)
 }
 
 #' Ler subprocessos e recursos do processo no CPOSG
@@ -574,18 +602,19 @@ esaj_cposg_ler_peticoes_diversas <- function(arquivo = NULL)  {
   html <- arquivo |>
     xml2::read_html()
 
-  processo <- html |>
-    xml2::xml_find_first("//span[@id='numeroProcesso']") |>
-    xml2::xml_text(trim = TRUE) |>
-    stringr::str_remove_all("\\D+")
+  processo <- esaj_cposg_get_processo(arquivo)
 
   cd_processo <- html |>
     xml2::xml_find_first("//input[@name='cdProcesso']") |>
     xml2::xml_attr("value")
 
+  tem_pet_divers <- xml2::xml_find_first(
+    "boolean(//h2[@class='subtitle' and normalize-space(text()) = 'Peti\u00E7\u00F5es diversas']/parent::div/following-sibling::table[1])"
+  )
+
   tabela <- html |>
     xml2::xml_find_first(
-      "//h2[@class='subtitle' and normalize-space(text()) = 'Petições diversas']/parent::div/following-sibling::table[1]"
+      "//h2[@class='subtitle' and normalize-space(text()) = 'Peti\u00E7\u00F5es diversas']/parent::div/following-sibling::table[1]"
     )
 
   pet_divers <- tabela |>
@@ -619,39 +648,54 @@ esaj_cposg_ler_composicao_julgamento <- function(arquivo = NULL) {
   html <- arquivo |>
     xml2::read_html()
 
-  processo <- html |>
-    xml2::xml_find_first("//span[@id='numeroProcesso']") |>
-    xml2::xml_text(trim = TRUE) |>
-    stringr::str_remove_all("\\D+")
+  processo <- esaj_cposg_get_processo(arquivo)
 
   cd_processo <- html |>
     xml2::xml_find_first("//input[@name='cdProcesso']") |>
     xml2::xml_attr("value")
 
-  tabela <- html |>
+  tem_julgamento <- html |>
     xml2::xml_find_first(
-      "//h2[@class='subtitle' and normalize-space(text()) = 'Composição do Julgamento']/parent::div/following-sibling::table[2]"
+      "boolean(//h2[@class='subtitle' and normalize-space(text()) = 'Composi\u00E7\u00E3o do Julgamento']/parent::div/following-sibling::table[2])"
     )
 
-  composicao_julgamento <- tabela |>
-    xml2::xml_find_all("./tr[contains(@class, 'fundo')]")
+  if (tem_julgamento) {
 
-  participacao <- composicao_julgamento |>
-    xml2::xml_find_first("./td[1]") |>
-    xml2::xml_text() |>
-    stringr::str_squish()
+    tabela <- html |>
+      xml2::xml_find_first(
+        "//h2[@class='subtitle' and normalize-space(text()) = 'Composi\u00E7\u00E3o do Julgamento']/parent::div/following-sibling::table[2]"
+      )
 
-  magistrado <- composicao_julgamento |>
-    xml2::xml_find_all("./td[2]") |>
-    xml2::xml_text() |>
-    stringr::str_squish()
+    composicao_julgamento <- tabela |>
+      xml2::xml_find_all("./tr[contains(@class, 'fundo')]")
 
-  tibble::tibble(
-    processo,
-    cd_processo,
-    participacao,
-    magistrado
-  )
+    participacao <- composicao_julgamento |>
+      xml2::xml_find_first("./td[1]") |>
+      xml2::xml_text() |>
+      stringr::str_squish()
+
+    magistrado <- composicao_julgamento |>
+      xml2::xml_find_all("./td[2]") |>
+      xml2::xml_text() |>
+      stringr::str_squish()
+
+    da <- tibble::tibble(
+      processo,
+      cd_processo,
+      participacao,
+      magistrado
+    )
+
+  } else {
+    da <- tibble::tibble(
+      processo,
+      cd_processo,
+      participacao = NA_character_,
+      magistrado = NA_character_
+    )
+  }
+
+  return(da)
 
 }
 
@@ -664,11 +708,68 @@ esaj_cposg_ler_composicao_julgamento <- function(arquivo = NULL) {
 #' \describe{
 #'   \item{processo}{Número do processo, somente dígitos.}
 #'   \item{cd_processo}{Código interno do processo.}
-#'   \item{dt_julgamento}{Data do julgamento (string).}
+#'   \item{dt_julgamento}{Data do julgamento.}
 #'   \item{situacao_julgamento}{Situação do julgamento.}
 #'   \item{decisao}{Decisão do julgamento.}
 #' }
 esaj_cposg_ler_julgamentos <- function(arquivo = NULL)  {
+
+  html <- arquivo |>
+    xml2::read_html()
+
+  processo <- esaj_cposg_get_processo(arquivo)
+
+  cd_processo <- html |>
+    xml2::xml_find_first("//input[@name='cdProcesso']") |>
+    xml2::xml_attr("value")
+
+  tem_julgamento <- !xml2::xml_find_first(html, "boolean(//td[@id='processoSemJulgamentos'])")
+
+  if(tem_julgamento) {
+
+    tabela <- html |>
+      xml2::xml_find_first(
+        "//h2[@class='subtitle' and normalize-space(text()) = 'Julgamentos']/parent::div/following-sibling::table[2]"
+      )
+
+    julgamentos <- tabela |>
+      xml2::xml_find_all("./tr[contains(@class, 'fundo')]")
+
+    dt_julgamento <- julgamentos |>
+      xml2::xml_find_first("./td[1]") |>
+      xml2::xml_text() |>
+      stringr::str_squish()
+
+    situacao_julgamento <- julgamentos |>
+      xml2::xml_find_all("./td[2]") |>
+      xml2::xml_text() |>
+      stringr::str_squish()
+
+    decisao <- julgamentos |>
+      xml2::xml_find_all("./td[3]") |>
+      xml2::xml_text() |>
+      stringr::str_squish()
+
+    da <- tibble::tibble(
+      processo,
+      cd_processo,
+      dt_julgamento,
+      situacao_julgamento,
+      decisao
+    )
+  } else {
+    da <- tibble::tibble(
+      processo,
+      cd_processo,
+      dt_julgamento = NA_character_,
+      situacao_julgamento = NA_character_,
+      decisao = NA_character_
+    )
+  }
+  return(da)
+}
+
+esaj_cposg_get_processo <- function(arquivo = NULL) {
 
   html <- arquivo |>
     xml2::read_html()
@@ -678,39 +779,17 @@ esaj_cposg_ler_julgamentos <- function(arquivo = NULL)  {
     xml2::xml_text(trim = TRUE) |>
     stringr::str_remove_all("\\D+")
 
-  cd_processo <- html |>
-    xml2::xml_find_first("//input[@name='cdProcesso']") |>
-    xml2::xml_attr("value")
+  if (is.na(processo)) {
 
-  tabela <- html |>
-    xml2::xml_find_first(
-      "//h2[@class='subtitle' and normalize-space(text()) = 'Julgamentos']/parent::div/following-sibling::table[2]"
-    )
+    processo <- html |>
+      xml2::xml_find_first("//div[@class='col-md-13']") |>
+      xml2::xml_find_first(".//span[contains(@class, 'unj-larger')]") |>
+      xml2::xml_text() |>
+      stringr::str_extract_all("\\d{7}-\\d{2}\\.\\d{4}\\.\\d\\.\\d{2}\\.\\d{4}") |>
+      stringr::str_remove_all("\\D+") |>
+      purrr::pluck(1)
 
-  julgamentos <- tabela |>
-    xml2::xml_find_all("./tr[contains(@class, 'fundo')]")
+  }
 
-  dt_julgamento <- julgamentos |>
-    xml2::xml_find_first("./td[1]") |>
-    xml2::xml_text() |>
-    stringr::str_squish()
-
-  situacao_julgamento <- julgamentos |>
-    xml2::xml_find_all("./td[2]") |>
-    xml2::xml_text() |>
-    stringr::str_squish()
-
-  decisao <- julgamentos |>
-    xml2::xml_find_all("./td[3]") |>
-    xml2::xml_text() |>
-    stringr::str_squish()
-
-  tibble::tibble(
-    processo,
-    cd_processo,
-    dt_julgamento,
-    situacao_julgamento,
-    decisao
-  )
+  return(processo)
 }
-

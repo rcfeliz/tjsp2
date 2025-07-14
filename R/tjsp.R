@@ -15,6 +15,7 @@ if (getRversion() >= "2.15.1") {
     "value", "dt_dist", "processo_incidente",
     "URLdecode", "setNames", "parte", "dt_peticao",
     "pagina_final", "url_doc", "classe", "assunto",
-    "row_id", "n", "id_doc", "pagina_inicial"
+    "row_id", "n", "id_doc", "pagina_inicial", "dir_exists",
+    "id_mov"
   ))
 }
